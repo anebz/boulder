@@ -50,13 +50,14 @@ class Boulder(scrapy.Spider):
         '''
         Function that the scrapy crawler calls, with the response of the URL provided in start_urls
         '''
-        gym_name = re.search("-(\w+)\.", response.url).group(1)
-        current_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
+        item = {}
 
-        location = gym_name if gym_name not in ['ost', 'west'] else 'muenchen'
-        weather_temp, weather_status = self.get_weather_info(location)
+        item['gym_name'] = re.search("-(\w+)\.", response.url).group(1)
+        item['current_time'] = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
 
-        occupancy, waiting = self.process_occupancy(response)
+        location = item['gym_name'] if item['gym_name'] not in ['ost', 'west'] else 'muenchen'
+        item['weather_temp'], item['weather_status'] = self.get_weather_info(location)
 
-        yield {'Gym': gym_name, 'Date': current_time, 'Occupancy': occupancy, 'Waiting': waiting,
-               'Temperature': weather_temp, 'Weather': weather_status}
+        item['occupancy'], item['waiting'] = self.process_occupancy(response)
+
+        yield item
