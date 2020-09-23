@@ -13,12 +13,15 @@ class Boulder(scrapy.Spider):
 
 
     def get_weather_info(self, location):
+        '''
+        Get weather temperature and status for a specific location in Germany
+        '''
+        location = location if 'muenchen' not in location else 'muenchen'
+
         owm = pyowm.OWM(self.settings['OWM_API'])
         mgr = owm.weather_manager()
         observation = mgr.weather_at_place(location+',DE').weather
-        weather_temp = observation.temperature('celsius')['temp']
-        weather_status = observation.status
-        return weather_temp, weather_status
+        return observation.temperature('celsius')['temp'], observation.status
 
 
     def process_occupancy(self, response):
@@ -49,15 +52,18 @@ class Boulder(scrapy.Spider):
     def parse(self, response):
         '''
         Function that the scrapy crawler calls, with the response of the URL provided in start_urls
+        Parameters:
+        * Gym name
+        * Current time
+        * Occupancy of gym
+        * Number of people waiting
+        * Weather temperature
+        * Weather status (clear, clouds, rain)
         '''
         item = {}
-
-        item['gym_name'] = re.search("-(\w+)\.", response.url).group(1)
+        item['gym_name'] = re.search("-([\w-]+)\..", response.url).group(1)
         item['current_time'] = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
-
-        location = item['gym_name'] if item['gym_name'] not in ['ost', 'west'] else 'muenchen'
-        item['weather_temp'], item['weather_status'] = self.get_weather_info(location)
-
         item['occupancy'], item['waiting'] = self.process_occupancy(response)
+        item['weather_temp'], item['weather_status'] = self.get_weather_info(item['gym_name'])
 
         yield item

@@ -20,8 +20,6 @@ cd /path/to/project/
 shub deploy
 ```
 
-gsutil cp boulder.csv gs://boulderbucket/
-
 ## Tools used
 
 * [Scrapy for Python](https://scrapy.org/)
@@ -37,10 +35,8 @@ gsutil cp boulder.csv gs://boulderbucket/
 
 ## next tasks
 
-* [~] [Save output differently](https://docs.scrapy.org/en/latest/topics/feed-exports.html#storages)
-  * Check Pipelines in scrapy docs
+* [~] [Save output to GCP](https://docs.scrapy.org/en/latest/topics/feed-exports.html#storages)
   * https://console.cloud.google.com/storage/browser/boulderbucket
-  * https://doc.scrapy.org/en/latest/topics/item-pipeline.html
   * https://stackoverflow.com/questions/55768694/getting-spider-on-scrapy-cloud-to-store-files-on-google-cloud-storage-using-gcsf
   * https://www.simoahava.com/google-cloud/scrape-domain-and-write-results-to-bigquery/
   * https://medium.com/@acowpy/scraping-files-images-using-scrapy-scrapinghub-and-google-cloud-storage-c7da9f9ac302
