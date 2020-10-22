@@ -1,2 +1,5 @@
+google-cloud-storage
 itemadapter
 pyowm
+PyYAML
+scrapinghub
