@@ -1,6 +1,7 @@
 import os
 import sys
 import yaml
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from scrapinghub import ScrapinghubClient
@@ -72,8 +73,8 @@ def parse_df(df):
     cols_to_keep.append('key')
     df = df[cols_to_keep]
 
-    # decode b-string to tsring
-    to_decode = ['gym_name', 'current_time', 'occupancy', 'weather_status', 'key']
+    # decode b-string to string
+    to_decode = ['gym_name', 'current_time', 'weather_status', 'key']
     # https://stackoverflow.com/a/46696826/4569908
     for col in to_decode:
         df[col] = df[col].str.decode('utf-8')
@@ -89,8 +90,12 @@ if __name__ == "__main__":
         # the csv is ordered chronologically, the first row is the latest job, with the most recent date
         latest_read_job = int(prev_df.loc[0]['key'].split('/')[2])
         new_df = get_data_from_scrapinghub(project, spider, limit=latest_read_job)
-        new_df = parse_df(new_df)
 
+        if new_df.empty:
+            print("No new jobs found")
+            sys.exit()
+
+        new_df = parse_df(new_df)
         df = new_df.append(prev_df)
         df = df.drop('Unnamed: 0', axis=1)
 
