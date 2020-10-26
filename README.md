@@ -27,6 +27,22 @@ cd /path/to/project/
 shub deploy
 ```
 
+Download items from AWS bucket. First, install `awscli` and configure your credentials
+
+```bash
+pip install awscli
+aws configure
+```
+
+Enter the security credentials created in [AWS console](https://console.aws.amazon.com), click on your username at the top right, `My security credentials`, `Create new access key`. Enter your region as well. For me it's `eu-central-1`. Once this is done, to download to a specific folder, where `bboulder` is the bucket name in your AWS S3 account.
+
+```bash
+cd /path/to/project/
+mkdir awsdata
+cd awsdata
+aws s3 sync s3://bboulder .
+```
+
 ## Tools used
 
 * [Scrapy for Python](https://scrapy.org/): [documentation](https://doc.scrapy.org/)
