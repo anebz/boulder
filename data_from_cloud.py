@@ -24,7 +24,7 @@ def get_spider_from_scrapinghub():
     return project, spider
 
 
-def get_data_from_scrapinghub(project, spider, limit=-1):
+def get_data_from_scrapinghub(project, spider, limit=''):
     data = []
     idx = 0
     while True:
@@ -38,14 +38,13 @@ def get_data_from_scrapinghub(project, spider, limit=-1):
         # iterate all jobs, check only finished jobs, and append each item to the data
         for key in tqdm(job_keys, desc=str(idx)):
             job = project.jobs.get(key)
-            if job.metadata.get(u'close_reason') == u'finished':
-                job_key_name = int(key.split('/')[2])
-
+            if job.metadata.get(u'close_reason') != u'finished':
+                continue
+            for item in job.items.iter():
                 # only to be used when data is already pre-loaded. Only load new items
-                if limit != -1 and job_key_name <= limit:
+                if limit != '' and item[b'current_time'].decode('utf-8') <= limit:
                     return pd.DataFrame(data)
-                for item in job.items.iter():
-                    data.append(item)
+                data.append(item)
 
         # https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.jobs.Jobs.iter
         # Scrapinghub API only allows 1000 jobs to be loaded at each time
@@ -66,15 +65,13 @@ def parse_df(df):
     else:
         for col in list(df):
             df[col.decode('utf-8')] = df[col]
-    df['key'] = df[b'_key']
 
     # only keep columns with converted names
     cols_to_keep = list(maps.keys())
-    cols_to_keep.append('key')
     df = df[cols_to_keep]
 
     # decode b-string to string
-    to_decode = ['gym_name', 'current_time', 'weather_status', 'key']
+    to_decode = ['gym_name', 'current_time', 'weather_status']
     # https://stackoverflow.com/a/46696826/4569908
     for col in to_decode:
         df[col] = df[col].str.decode('utf-8')
@@ -88,7 +85,7 @@ if __name__ == "__main__":
         # data has already been downloaded before
         prev_df = pd.read_csv('boulderdata.csv')
         # the csv is ordered chronologically, the first row is the latest job, with the most recent date
-        latest_read_job = int(prev_df.loc[0]['key'].split('/')[2])
+        latest_read_job = prev_df.loc[0]['current_time']
         new_df = get_data_from_scrapinghub(project, spider, limit=latest_read_job)
 
         if new_df.empty:
