@@ -1,5 +1,4 @@
-google-cloud-storage
-itemadapter
+boto
 pyowm
 PyYAML
 scrapinghub

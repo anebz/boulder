@@ -31,21 +31,21 @@ class Boulder(scrapy.Spider):
 
         crowdleveltag = response.css('div#crowd-level-tags-container')[0]
         # not crowded
-        child = crowdleveltag.css('div.crowd-level-pointer')[0]
-        text = child.css('div')[1].css('div')[0].css('div::text').get()
+        ncrowded = crowdleveltag.css('div.crowd-level-pointer')[0]
+        ncrowded_text = ncrowded.css('div')[1].css('div')[0].css('div::text').get()
         try:
-            occupancy = int(text[:-1])
+            occupancy = int(ncrowded_text[:-1])
         except:
             occupancy = 0
 
         # crowded
-        child = crowdleveltag.css('div.crowd-level-stop')[0]
-        waiting = child.css('span::text').get()
+        crowded = crowdleveltag.css('div.crowd-level-stop')[0]
+        waiting = crowded.css('span::text').get()
         try:
             waiting = int(re.search(r'\d+', waiting).group())
         except:
             waiting = 0
-        
+
         return occupancy, waiting
 
 
