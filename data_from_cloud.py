@@ -1,9 +1,13 @@
 import os
 import sys
+import glob
+import json
 import yaml
+import boto3
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from datetime import datetime, timedelta
 from scrapinghub import ScrapinghubClient
 
 
@@ -22,6 +26,46 @@ def get_spider_from_scrapinghub():
     # this project only contains one spider, that's why the first spider in the list is taken
     spider = project.spiders.get(project.spiders.list()[0]['id'])
     return project, spider
+
+
+def download_from_s3():
+    # it assumes that credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) are already set as env variables
+    client = boto3.client('s3')
+    bucketname = 'bboulder'
+
+    # bucket is empty
+    if 'Contents' not in client.list_objects(Bucket=bucketname):
+        print("No new data to retrieve from AWS S3")
+        return
+    
+    # download each file into 'awsdata' folder and delete object from bucket
+    for s3_key in tqdm(client.list_objects(Bucket=bucketname)['Contents']):
+        s3_object = s3_key['Key']
+        client.download_file(bucketname, s3_object, 'awsdata/'+s3_object)
+        client.delete_object(Bucket=bucketname, Key=s3_object)
+    return
+
+
+def parse_aws_data(df):
+    # access csvs downloaded from AWS S3 ordered by the earliest date
+    os.chdir('awsdata')
+    for infile in sorted(glob.glob('*.csv')):
+        # change date format
+        date = datetime.strptime(infile.strip('.csv'), '%Y-%m-%dT%H-%M-%S').strftime('%Y/%m/%d %H:%M')
+        # add 1h for Berlin time
+        date = (datetime.strptime(date, '%Y/%m/%d %H:%M') + timedelta(hours=1)).strftime('%Y/%m/%d %H:%M')
+
+        # date is already in the df, duplicated data. skip
+        if len(df[df['current_time'] == date]) > 0:
+            continue
+
+        # open and parse files downloaded from AWS S3
+        with open(infile) as f:
+            new_df = pd.DataFrame([json.loads(line.strip('\n')) for line in f.readlines()])
+        if not new_df.empty:
+            df = new_df.append(df)
+        os.remove(infile)
+    return df
 
 
 def get_data_from_scrapinghub(project, spider, limit=''):
@@ -78,12 +122,24 @@ def parse_df(df):
     
     return df
 
+
 if __name__ == "__main__":
 
-    project, spider = get_spider_from_scrapinghub()
     try:
-        # data has already been downloaded before
         prev_df = pd.read_csv('boulderdata.csv')
+    except FileNotFoundError:
+        df = get_data_from_scrapinghub(project, spider)
+        df = parse_df(df)
+        df.to_csv('boulderdata.csv', index=False)
+        sys.exit()
+
+    mode = 'aws'  # aws, scrapinghub
+    if mode == 'aws':
+        download_from_s3()
+        df = parse_aws_data(prev_df)
+        os.chdir('..')
+    else:
+        project, spider = get_spider_from_scrapinghub()
         # the csv is ordered chronologically, the first row is the latest job, with the most recent date
         latest_read_job = prev_df.loc[0]['current_time']
         new_df = get_data_from_scrapinghub(project, spider, limit=latest_read_job)
@@ -94,10 +150,5 @@ if __name__ == "__main__":
 
         new_df = parse_df(new_df)
         df = new_df.append(prev_df)
-        df = df.drop('Unnamed: 0', axis=1)
-
-    except FileNotFoundError:
-        df = get_data_from_scrapinghub(project, spider)
-        df = parse_df(df)
-
-    df.to_csv('boulderdata.csv')
+        
+    df.to_csv('boulderdata.csv', index=False)
