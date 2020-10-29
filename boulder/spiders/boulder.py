@@ -28,7 +28,6 @@ class Boulder(scrapy.Spider):
         '''
         Extract occupancy of gym and if full, number of people waiting
         '''
-
         crowdleveltag = response.css('div#crowd-level-tags-container')[0]
         # not crowded
         ncrowded = crowdleveltag.css('div.crowd-level-pointer')[0]
@@ -62,7 +61,7 @@ class Boulder(scrapy.Spider):
         '''
         item = {}
         item['gym_name'] = re.search("-([\w-]+)\..", response.url).group(1)
-        item['current_time'] = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
+        item['current_time'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M")
         item['occupancy'], item['waiting'] = self.process_occupancy(response)
         item['weather_temp'], item['weather_status'] = self.get_weather_info(item['gym_name'])
 
