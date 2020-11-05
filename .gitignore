@@ -130,6 +130,6 @@ dmypy.json
 
 # other
 .vscode/
-*.ipynb
+#*.ipynb
 *.json
 *.csv
