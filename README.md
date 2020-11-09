@@ -1,5 +1,9 @@
 # Boulder gym tracker project
 
+Overview of this project
+
+![ ](boulder.png)
+
 Requirements for this project
 
 ```txt
