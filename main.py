@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from average_data import avg_data_day, plot_ave_data
+from src.average_data import avg_data_day, plot_ave_data
 
 weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 gyms = ['Munich East', 'Munich West', 'Regensburg', 'Dortmund', 'Frankfurt']
