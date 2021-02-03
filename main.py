@@ -14,7 +14,9 @@ if __name__ == "__main__":
     gym = st.selectbox('Select gym', gyms)
     day = st.selectbox('Select day of the week', weekdays)
 
-    ave_data = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
+    avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
+
+    st.write(avgdf)
 
     st.write("Plotting average occupancy, waiting people and weather")
-    st.pyplot(plot_ave_data(ave_data))
+    st.pyplot(plot_ave_data(avgdf))
