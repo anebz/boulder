@@ -1,9 +1,11 @@
 import pandas as pd
-from datetime import datetime
 import matplotlib.pyplot as plt
 
-def avg_data_day(boulderdf, day, gym):
-    """averages all of the data for a specific gym, day, and time of the week and returns a new df"""
+def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
+    '''
+    Input: dataframe with all data, weekday (0: Monday, 6: Sunday), gym name
+    Output: dataframe with average data for the given input parameters
+    '''
     
     # obtain only the data for the specific weekday and gym
     boulderdf['current_time'] = pd.to_datetime(boulderdf['current_time'])
@@ -13,7 +15,6 @@ def avg_data_day(boulderdf, day, gym):
     # transform date to hour and minute format
     boulderdf['current_time'] = boulderdf['current_time'].dt.strftime('%H:%M')
     boulderdf.drop(['gym_name'], inplace=True, axis=1)
-    #boulderdf = boulderdf[['time', 'occupancy', 'waiting', 'weather_temp', 'weather_status']]
 
     # iterate through the hours and obtain the means for all values
     avgdf = []
@@ -32,7 +33,7 @@ def avg_data_day(boulderdf, day, gym):
     return avgdf
 
 
-def plot_ave_data(df):
+def plot_ave_data(df: pd.DataFrame) -> plt.figure:
     fig = plt.figure()
     plt.plot('time', 'occupancy', data=df, marker='o', markerfacecolor='blue', markersize=12, color='skyblue', linewidth=4)
     plt.plot('time', 'waiting', data=df, marker='', color='olive', linewidth=2)
