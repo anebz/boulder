@@ -1,5 +1,6 @@
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+
 
 def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     '''
@@ -33,10 +34,20 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     return avgdf
 
 
-def plot_ave_data(df: pd.DataFrame) -> plt.figure:
-    fig = plt.figure()
-    plt.plot('time', 'occupancy', data=df, marker='o', markerfacecolor='blue', markersize=12, color='skyblue', linewidth=4)
-    plt.plot('time', 'waiting', data=df, marker='', color='olive', linewidth=2)
-    plt.plot('time', 'weather_temp', data=df, marker='', color='olive', linewidth=2, linestyle='dashed', label="temp")
-    plt.legend()
+def plot_ave_data(df: pd.DataFrame) -> go.Figure:
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=df.time, y=df.occupancy, name='Occupance',
+                         line=dict(color='firebrick', width=4)))
+    fig.add_trace(go.Scatter(x=df.time, y=df.waiting, name='Waiting',
+                         line=dict(color='royalblue', width=4,
+                              dash='dash'))) # dash options include 'dash', 'dot', and 'dashdot
+    fig.add_trace(go.Scatter(x=df.time, y=df.weather_temp, name='Weather Temp',
+                         line = dict(color='green', width=4, dash='dot')))
+
+    fig.update_layout(title='Plotting average occupancy, waiting people and weather',
+                   xaxis_title='Time')
+                  # yaxis_title='Temperature (degrees F)')
+    fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
+
     return fig

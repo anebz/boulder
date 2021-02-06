@@ -16,5 +16,4 @@ if __name__ == "__main__":
 
     avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
 
-    st.write("Plotting average occupancy, waiting people and weather")
-    st.pyplot(plot_ave_data(avgdf))
+    st.plotly_chart(plot_ave_data(avgdf))
