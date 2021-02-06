@@ -37,7 +37,7 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
 def plot_ave_data(df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
 
-    fig.add_trace(go.Scatter(x=df.time, y=df.occupancy, name='Occupance',
+    fig.add_trace(go.Scatter(x=df.time, y=df.occupancy, name='Occupancy',
                          line=dict(color='firebrick', width=4)))
     fig.add_trace(go.Scatter(x=df.time, y=df.waiting, name='Waiting',
                          line=dict(color='royalblue', width=4,
@@ -47,7 +47,8 @@ def plot_ave_data(df: pd.DataFrame) -> go.Figure:
 
     fig.update_layout(title='Plotting average occupancy, waiting people and weather',
                    xaxis_title='Time')
-                  # yaxis_title='Temperature (degrees F)')
+
     fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
+
 
     return fig
