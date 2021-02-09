@@ -1,3 +1,4 @@
 pyowm
 scrapinghub
+plotly
 streamlit
