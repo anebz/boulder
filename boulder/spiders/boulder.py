@@ -7,6 +7,7 @@ class Boulder(scrapy.Spider):
     name = 'boulder'
     start_urls = ['https://www.boulderwelt-muenchen-ost.de/',
                 'https://www.boulderwelt-muenchen-west.de/',
+                'https://www.boulderwelt-muenchen-sued.de/',
                 'https://www.boulderwelt-frankfurt.de/',
                 'https://www.boulderwelt-dortmund.de/',
                 'https://www.boulderwelt-regensburg.de/']

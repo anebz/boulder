@@ -125,6 +125,7 @@ def parse_df(df):
 
 if __name__ == "__main__":
 
+    os.makedirs("awsdata", exist_ok=True)
     try:
         prev_df = pd.read_csv('boulderdata.csv')
     except FileNotFoundError:

@@ -1,2 +1,3 @@
 pyowm
+scrapinghub
 streamlit
