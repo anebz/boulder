@@ -1,4 +1,2 @@
-pyowm
-scrapinghub
 plotly
 streamlit
