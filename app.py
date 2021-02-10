@@ -18,3 +18,5 @@ if __name__ == "__main__":
     avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
 
     st.plotly_chart(plot_ave_data(avgdf))
+
+    st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra)')

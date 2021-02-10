@@ -103,7 +103,7 @@ Streamlit supports [Streamlit Sharing](https://www.streamlit.io/sharing), an eas
 
 * [Create app in Heroku](https://dashboard.heroku.com) and set a name
 * Create Dockerfile
-  * Add specific streamlit commands, echo `$PORT` ([important](https://discuss.streamlit.io/t/deploying-heroku-error/1310/3)! The app might not recognize the port otherwise)
+  * Add [specific streamlit commands](https://discuss.streamlit.io/t/how-to-use-streamlit-in-docker/1067/2), echo `$PORT` ([important](https://discuss.streamlit.io/t/deploying-heroku-error/1310/3)! The app might not recognize the port otherwise)
   * **Install dependencies before copying files**: see [Layer caching in this Medium post](https://blog.realkinetic.com/building-minimal-docker-containers-for-python-applications-37d0272c52f3)
   * When connecting to heroku, use `container:`
 * Create `heroku.yml`
