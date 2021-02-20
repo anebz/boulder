@@ -134,4 +134,4 @@ dmypy.json
 *.json
 *.csv
 keys.py
-.DS_Store
+*.DS_Store
