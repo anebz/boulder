@@ -10,10 +10,11 @@ RUN bash -c 'echo -e "\
     " > ~/.streamlit/config.toml'
 
 # copy over and install packages
-COPY requirements.txt ./requirements.txt
-RUN pip3 install -r requirements.txt
+COPY requirements_web.txt ./app/requirements_web.txt
+RUN pip3 install -r app/requirements_web.txt
 
-# copying everything over, including the .csv
-COPY . /
+# copy workspace over to /app
+COPY . /app
+WORKDIR /app
 
 CMD ["sh", "-c", "streamlit run --server.port $PORT app.py"]

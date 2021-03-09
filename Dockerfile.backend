@@ -1,0 +1,27 @@
+FROM python:3.8-slim
+
+# Install dependencies
+RUN apt-get update && apt-get install -y -qq \
+    cron
+
+# copy over and install packages
+COPY requirements_backend.txt ./app/requirements_backend.txt
+RUN pip3 install -r app/requirements_backend.txt
+
+# copy workspace over to /app
+COPY . /app
+WORKDIR /app
+
+# download boulderdata from AWS s3
+#RUN aws s3 cp s3://bboulderdataset/boulderdata.csv ./
+
+# https://stackoverflow.com/a/37458519/4569908
+# Give execution rights on the cron job
+RUN chmod 0744 scrape.sh
+RUN chmod 0644 scrapecron
+RUN touch cron.log
+
+# Apply cron job
+RUN crontab scrapecron
+
+CMD ["cron", "-f"]
