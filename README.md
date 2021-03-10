@@ -19,6 +19,7 @@ Requirements
 ```bash
 pip install scrapy
 pip install scrapinghub
+pip install pyowm
 ```
 
 ### [Scrapy](https://scrapy.org/)
@@ -51,6 +52,14 @@ To deploy to [Scrapinghub](https://app.zyte.com/p/471449/jobs), the spider and a
 
 ```bash
 shub deploy
+```
+
+To run backend Dockerfile: 
+
+```bash
+docker build -t boulder-backend -f Dockerfile.backend .
+docker run -d boulder-backend 
+docker exec -it container_name /bin/bash
 ```
 
 ### [AWS S3](https://aws.amazon.com/s3/)
@@ -111,7 +120,7 @@ Streamlit supports [Streamlit Sharing](https://www.streamlit.io/sharing), an eas
 ```bash
 # attach project to heroku app
 heroku git:remote -a bouldergym
-# log in with the CLI
+# log in with the CLI. docker must be running
 heroku container:login
 # push changes to heroku
 heroku container:push web

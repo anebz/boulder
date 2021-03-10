@@ -1,3 +1,4 @@
+apscheduler
 awscli
 pandas
 pyowm
