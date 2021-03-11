@@ -1,5 +1,4 @@
 build:
   docker:
-    web: Dockerfile
-run:
-  clock: python src/clock.py
+    web: Dockerfile.web
+    backend: Dockerfile.backend

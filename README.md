@@ -2,31 +2,18 @@
 
 - [Boulder gym tracker project](#boulder-gym-tracker-project)
   - [Scraping](#scraping)
-    - [Scrapy](#scrapy)
-    - [Scrapinghub/Zyte](#scrapinghubzyte)
-    - [AWS S3](#aws-s3)
-  - [Front-end and deployment](#front-end-and-deployment)
-    - [Streamlit](#streamlit)
-    - [Heroku](#heroku)
+  - [Backend docker](#backend-docker)
+  - [Front-end](#front-end)
+  - [Deployment: Heroku](#deployment-heroku)
   - [Resources](#resources)
 
 ![ ](boulder.png)
 
 ## Scraping
 
-Requirements
-
-```bash
-pip install scrapy
-pip install scrapinghub
-pip install pyowm
-```
-
-### [Scrapy](https://scrapy.org/)
-
-* [Scrapinghub](https://www.scrapinghub.com/scrapy-cloud/): [documentation](https://doc.scrapinghub.com/scrapy-cloud.html)
+* [Scrapy](https://scrapy.org/)
 * [PyOWM](https://github.com/csparpa/pyowm)
-  * Set `OWM_API` in settings, either settings.py in local or Spider settings in Scrapinghub
+  * The environment variable `OWM_API` must be set
 
 ```bash
 # play around a website with scrapy
@@ -37,98 +24,57 @@ scrapy crawl boulder -o output.json
 scrapy crawl boulder
 ```
 
-### [Scrapinghub/Zyte](https://www.zyte.com/)
+## Backend docker
 
-> Environment variables in Scrapinghub
-
-1. Go to Spiders, click on your spider, raw settings and save your variable in this format
-   1. `API = '123'`
-2. Retrieve the environment variable in your code in this format
-   1. `api = self.settings['API']`
-   2. [How to access settings](https://doc.scrapy.org/en/latest/topics/settings.html)
-3. Deploy the code, delete the periodic jobs, start it again
-
-To deploy to [Scrapinghub](https://app.zyte.com/p/471449/jobs), the spider and app must be created beforehand:
-
-```bash
-shub deploy
+Set AWS profile
+```
+export AWS_PROFILE=boulder
 ```
 
-To run backend Dockerfile: 
+Or set the environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+
+To run backend Dockerfile in local: 
 
 ```bash
 docker build -t boulder-backend -f Dockerfile.backend .
 docker run -d boulder-backend 
-docker exec -it container_name /bin/bash
+docker exec -it CONTAINER_NAME /bin/bash
 ```
 
-### [AWS S3](https://aws.amazon.com/s3/)
+## Front-end
 
-Requirements
-
-```bash
-pip install awscli
-pip install boto3
-```
-
-Set the environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `FEED_URI = 's3://your-bucket/%(time)s.csv'` in Scrapinghub settings as stated in the [documentation](https://doc.scrapy.org/en/latest/topics/feed-exports.html#s3)
-
-To download items from AWS bucket, first, configure your credentials
-
-```bash
-aws configure
-```
-
-Enter the security credentials created in [AWS console](https://console.aws.amazon.com), click on your username at the top right, `My security credentials`, `Create new access key`. Enter your region as well. For me it's `eu-central-1`. Once this is done, to download to a specific folder, where `bboulder` is the bucket name in your AWS S3 account.
-
-```bash
-mkdir awsdata
-cd awsdata
-aws s3 sync s3://bboulder .
-```
-
-Or run `python src/data_from_cloud.py`, which downloads the objects from S3 and merges them with the existing .csv.
-
-## Front-end and deployment
-
-Requirements
-
-```bash
-pip install streamlit
-pip install heroku
-```
-
-### [Streamlit](https://streamlit.io/)
-
-Run streamlit locally
+Run [Streamlit](https://streamlit.io/) locally
 
 ```bash
 streamlit run app.py
 ```
 
-Streamlit supports [Streamlit Sharing](https://www.streamlit.io/sharing), an easy way to deploy Streamlit apps. But as of now they have a storage limitation, which is why this app has been deployed in Heroku.
+## Deployment: [Heroku](https://devcenter.heroku.com/)
 
-### [Heroku](https://devcenter.heroku.com/)
-
-* [Create app in Heroku](https://dashboard.heroku.com) and set a name
-* Create Dockerfile
+* [Create app in Heroku](https://dashboard.heroku.com) and set a name. In this case, **`bouldern`**
+* Create `Dockerfile.web`
   * Add [specific streamlit commands](https://discuss.streamlit.io/t/how-to-use-streamlit-in-docker/1067/2), echo `$PORT` ([important](https://discuss.streamlit.io/t/deploying-heroku-error/1310/3)! The app might not recognize the port otherwise)
   * **Install dependencies before copying files**: see [Layer caching in this Medium post](https://blog.realkinetic.com/building-minimal-docker-containers-for-python-applications-37d0272c52f3)
-  * When connecting to heroku, use `container:`
-* Create `heroku.yml`
+* Create `Dockerfile.backend` with the backend clock function in CMD
+* Set web and backend in `heroku.yml`
+
+Set up project in Heroku
 
 ```bash
 # attach project to heroku app
-heroku git:remote -a bouldergym
+heroku git:remote -a bouldern
 # log in with the CLI. docker must be running
 heroku container:login
-# push changes to heroku
-heroku container:push web
+```
+
+```bash
+# push changes to heroku, --recursive so that it takes web & backend
+heroku container:push --recursive
 # release app
-heroku container:release web
-# to scale it down=shut it off, web=0. To scale it back up, web=1
-heroku ps:scale web=0
-# to check logs
+heroku container:release web backend
+# upscale backend, it's off by default
+heroku ps:scale backend=1
+# check logs
 heroku logs --tail
 ```
 

@@ -1,8 +1,5 @@
 FROM python:3.8-slim
 
-# Install dependencies
-RUN apt-get update && apt-get -y install cron
-
 # copy over and install packages
 COPY requirements_backend.txt ./app/requirements_backend.txt
 RUN pip3 install -r app/requirements_backend.txt
@@ -11,21 +8,4 @@ RUN pip3 install -r app/requirements_backend.txt
 COPY . /app
 WORKDIR /app
 
-# Add crontab file in the cron directory
-ADD scrapecron /etc/cron.d/scrapecron
-
-# https://stackoverflow.com/a/37458519/4569908
-# Give execution rights on the script
-RUN chmod 0744 scrape.sh
-RUN chmod +x /app/scrape.sh
-
-# Give execution rights on the cron job and apply the job
-RUN chmod 0644 /etc/cron.d/scrapecron && crontab /etc/cron.d/scrapecron
-
-# download boulderdata from AWS s3
-#RUN aws s3 cp s3://bboulderdataset/boulderdata.csv ./
-
-# Create the log file to be able to run tail
-RUN touch /var/log/cron.log
-
-ENTRYPOINT ["cron", "-f"]
+CMD ["python", "src/clock_backend.py"]

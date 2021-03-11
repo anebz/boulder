@@ -1,5 +1,5 @@
 apscheduler
-awscli
+boto3
 pandas
 pyowm
 scrapy
