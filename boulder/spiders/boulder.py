@@ -1,7 +1,8 @@
+import os
 import re
 import pyowm
 import scrapy
-import datetime
+from datetime import datetime, timedelta
 
 class Boulder(scrapy.Spider):
     name = 'boulder'
@@ -19,7 +20,7 @@ class Boulder(scrapy.Spider):
         '''
         location = location if 'muenchen' not in location else 'muenchen'
 
-        owm = pyowm.OWM(self.settings['OWM_API'])
+        owm = pyowm.OWM(os.environ['OWM_API'])
         mgr = owm.weather_manager()
         observation = mgr.weather_at_place(location+',DE').weather
         return observation.temperature('celsius')['temp'], observation.status
@@ -62,7 +63,7 @@ class Boulder(scrapy.Spider):
         '''
         item = {}
         item['gym_name'] = re.search("-([\w-]+)\..", response.url).group(1)
-        item['current_time'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M")
+        item['current_time'] = (datetime.now() + timedelta(hours=1)).strftime("%Y/%m/%d %H:%M")
         item['occupancy'], item['waiting'] = self.process_occupancy(response)
         item['weather_temp'], item['weather_status'] = self.get_weather_info(item['gym_name'])
 

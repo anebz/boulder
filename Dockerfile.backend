@@ -1,0 +1,11 @@
+FROM python:3.8-slim
+
+# copy over and install packages
+COPY requirements_backend.txt ./app/requirements_backend.txt
+RUN pip3 install -r app/requirements_backend.txt
+
+# copy workspace over to /app
+COPY . /app
+WORKDIR /app
+
+CMD ["python", "src/clock_backend.py"]

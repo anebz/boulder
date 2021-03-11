@@ -1,0 +1,5 @@
+apscheduler
+boto3
+pandas
+pyowm
+scrapy

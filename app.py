@@ -9,6 +9,11 @@ gyms_dict = {'Munich East': 'muenchen-ost', 'Munich West': 'muenchen-west', 'Dor
 
 if __name__ == "__main__":
 
+    # Set page title and favicon.
+    st.set_page_config(
+        page_title="Bouldern", 
+        page_icon="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/271/person-climbing_1f9d7.png")
+
     st.title('Boulder gym tracker')
     boulderdf = pd.read_csv("boulderdata.csv")
 
@@ -16,7 +21,6 @@ if __name__ == "__main__":
     day = st.selectbox('Select day of the week', weekdays, index=datetime.datetime.today().weekday())
 
     avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
-
     st.plotly_chart(plot_ave_data(avgdf))
 
-    st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra)')
+    st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).')
