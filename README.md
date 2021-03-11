@@ -1,12 +1,5 @@
 # Boulder gym tracker project
 
-- [Boulder gym tracker project](#boulder-gym-tracker-project)
-  - [Scraping](#scraping)
-  - [Backend docker](#backend-docker)
-  - [Front-end](#front-end)
-  - [Deployment: Heroku](#deployment-heroku)
-  - [Resources](#resources)
-
 ![ ](boulder.png)
 
 ## Scraping
