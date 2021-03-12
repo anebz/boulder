@@ -1,3 +1,4 @@
 apscheduler
+boto3
 plotly
 streamlit
