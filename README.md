@@ -2,21 +2,6 @@
 
 ![ ](boulder.png)
 
-## Scraping
-
-* [Scrapy](https://scrapy.org/)
-* [PyOWM](https://github.com/csparpa/pyowm)
-  * The environment variable `OWM_API` must be set
-
-```bash
-# play around a website with scrapy
-scrapy shell https://www.website.com
-# run crawler locally and save item into `output.json`
-scrapy crawl boulder -o output.json
-# If an external storage is defined (S3 from AWS for example):
-scrapy crawl boulder
-```
-
 ## Backend docker
 
 Set AWS profile
@@ -24,13 +9,14 @@ Set AWS profile
 export AWS_PROFILE=boulder
 ```
 
-Or set the environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+Or set the environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `OWM_API`.
 
 To run backend Dockerfile in local: 
 
 ```bash
 docker build -t boulder-backend -f Dockerfile.backend .
-docker run -d boulder-backend 
+docker run -d boulder-backend
+# check container name with docker ps
 docker exec -it CONTAINER_NAME /bin/bash
 ```
 
@@ -50,6 +36,7 @@ streamlit run app.py
   * **Install dependencies before copying files**: see [Layer caching in this Medium post](https://blog.realkinetic.com/building-minimal-docker-containers-for-python-applications-37d0272c52f3)
 * Create `Dockerfile.backend` with the backend clock function in CMD
 * Set web and backend in `heroku.yml`
+* Create environment variables in Heroku: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `OWM_API` from [PyOWM](https://github.com/csparpa/pyowm)
 
 Set up project in Heroku
 
@@ -70,6 +57,8 @@ heroku ps:scale backend=1
 # check logs
 heroku logs --tail
 ```
+
+Alternatively, you can connect Heroku to Github so that the commits to the main branch trigger a Heroku deployment.
 
 ---------
 
