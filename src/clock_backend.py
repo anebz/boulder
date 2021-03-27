@@ -13,21 +13,15 @@ dfname = 'boulderdata.csv'
 
 @sched.scheduled_job('cron', hour='7-23', minute='*/15')
 def run_backend():
-
-    print("Scraping bouldering gyms")
     webdf = scrape_websites()
-
     # only update if occupancy in gyms is > 0
     if not (webdf['occupancy'] == 0).all():
         # merge boulderdata with tmp file
         webdf.append(pd.read_csv(dfname)).to_csv(dfname, index=False)
-        # upload to AWS
-        print("Updating the S3 dataset")
         response = s3.upload_file(dfname, bucketname, dfname)
+        print("Scraping done and data updated to S3")
     else:
-        # all gyms are empty, don't do anything
         print("Nothing was scraped, S3 is not updated")
-    print("Done")
     return
 
 
