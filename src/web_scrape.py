@@ -45,7 +45,8 @@ def get_weather_info(location: str) -> tuple():
 def scrape_websites() -> pd.DataFrame:
 
     webdata = []
-    current_time = (datetime.now() + timedelta(hours=1)).strftime("%Y/%m/%d %H:%M")
+    # Winter time: (datetime.now() + timedelta(hours=1))
+    current_time = datetime.now().strftime("%Y/%m/%d %H:%M")
     for webpage in urls:
         gym_name = re.search("-([\w-]+)\.", webpage).group(1)
         weather_temp, weather_status = get_weather_info(gym_name)
