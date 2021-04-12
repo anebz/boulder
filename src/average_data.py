@@ -44,3 +44,19 @@ def plot_ave_data(df: pd.DataFrame) -> go.Figure:
 
     fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
     return fig
+
+
+def given_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
+    '''
+    Input: dataframe with all data, DATE (TODO), gym name
+    Output: dataframe with all of the data for the given input parameters in 15min intervals
+    '''
+    
+    # get which day the input date is
+    # avgdf = avg_data_day(boulderdf, day, gym)
+    # filter avgdf for the given day
+    # return df
+
+
+def data_today():
+    pass
