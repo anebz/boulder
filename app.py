@@ -5,8 +5,9 @@ import streamlit as st
 from src.average_data import avg_data_day, plot_ave_data
 
 weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-gyms = ['Munich East', 'Munich West', 'Dortmund', 'Frankfurt', 'Regensburg']
-gyms_dict = {'Munich East': 'muenchen-ost', 'Munich West': 'muenchen-west', 'Dortmund': 'dortmund', 'Frankfurt': 'frankfurt', 'Regensburg': 'regensburg'}
+gyms = ['Munich East', 'Munich West', 'Munich South', 'Dortmund', 'Frankfurt', 'Regensburg']
+gyms_dict = {'Munich East': 'muenchen-ost', 'Munich West': 'muenchen-west', 'Munich South': 'muenchen-sued', 
+            'Dortmund': 'dortmund', 'Frankfurt': 'frankfurt', 'Regensburg': 'regensburg'}
 bucketname = 'bboulderdataset'
 dfname = 'boulderdata.csv'
 
@@ -19,9 +20,8 @@ if __name__ == "__main__":
 
     st.title('Boulder gym tracker')
     # it assumes that credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) are already set as env variables
-    s3 = boto3.client('s3')
-    s3.download_file(bucketname, dfname, dfname)
-    boulderdf = pd.read_csv("boulderdata.csv")
+    boto3.client('s3').download_file(bucketname, dfname, dfname)
+    boulderdf = pd.read_csv(dfname)
 
     gym = st.selectbox('Select gym', gyms)
     day = st.selectbox('Select day of the week', weekdays, index=datetime.datetime.today().weekday())
