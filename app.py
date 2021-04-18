@@ -2,7 +2,7 @@ import boto3
 import datetime
 import pandas as pd
 import streamlit as st
-from src.average_data import avg_data_day, plot_ave_data
+from src.average_data import avg_data_day, plot_ave_data, given_day, plot_given_date
 
 weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 gyms = ['Munich East', 'Munich West', 'Dortmund', 'Frankfurt', 'Regensburg']
@@ -28,5 +28,23 @@ if __name__ == "__main__":
 
     avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
     st.plotly_chart(plot_ave_data(avgdf))
+
+    if st.button('Data Today'):
+        gym = st.selectbox('Select gym', gyms)
+        givendaydf = given_day(boulderdf, str(today), gyms_dict[gym])
+        st.plotly_chart(plot_given_date(givendaydf))
+
+    gym = st.selectbox('Select gym', gyms)
+    selected_date = st.date_input('Selected date', yesterday)
+    if selected_date < first_date:
+        st.error('Error: End date must fall after 3rd September 2020.')
+    elif selected_date > tomorrow:
+        st.error('Error: Selected date must fall betweem 3rd September 2020 and now.')
+    elif selected_date < tomorrow:
+        st.success('Selected date: `%s`\n' % (selected_date))
+
+    if selected_date < today:
+        givendaydf = given_day(boulderdf, str(selected_date), gyms_dict[gym])
+        st.plotly_chart(plot_given_date(givendaydf))
 
     st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).')

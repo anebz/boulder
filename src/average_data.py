@@ -46,17 +46,37 @@ def plot_ave_data(df: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def given_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
+def given_day(boulderdf: pd.DataFrame, selected_date, gym: str) -> pd.DataFrame:
     '''
     Input: dataframe with all data, DATE (TODO), gym name
     Output: dataframe with all of the data for the given input parameters in 15min intervals
     '''
     
-    # get which day the input date is
-    # avgdf = avg_data_day(boulderdf, day, gym)
-    # filter avgdf for the given day
-    # return df
+    # obtain only the data for the specific weekday and gym
+    boulderdf['current_time'] = pd.to_datetime(boulderdf['current_time'])
+    boulderdf = boulderdf[boulderdf.current_time.astype(str).str.contains(selected_date)]
+    boulderdf['current_time'] = pd.to_datetime(boulderdf['current_time'])
+    boulderdf = boulderdf[boulderdf['gym_name'] == gym]
 
+    # transform date to hour and minute format
+    boulderdf['current_time'] = boulderdf['current_time'].dt.strftime('%H:%M')
+    boulderdf.drop(['gym_name'], inplace=True, axis=1)
+
+    # sort the data by time
+    boulderdf.sort_values(by=['current_time'], inplace=True)
+    return boulderdf
+
+
+def plot_given_date(df: pd.DataFrame) -> go.Figure:
+    fig = go.Figure()
+    # dash options include 'dash', 'dot', and 'dashdot
+    fig.add_trace(go.Scatter(x=df.current_time, y=df.occupancy, name='Occupancy', line=dict(color='firebrick', width=4)))
+    fig.add_trace(go.Scatter(x=df.current_time, y=df.waiting, name='Waiting', line=dict(color='royalblue', width=4, dash='dash')))
+    fig.add_trace(go.Scatter(x=df.current_time, y=df.weather_temp, name='Weather Temp', line = dict(color='green', width=4, dash='dot')))
+    fig.update_layout(title='Plotting average occupancy, waiting people and weather', xaxis_title='Time')
+
+    fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
+    return fig
 
 def data_today():
     pass
