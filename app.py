@@ -13,7 +13,6 @@ dfname = 'boulderdata.csv'
 
 if __name__ == "__main__":
 
-    # Set page title and favicon.
     st.set_page_config(
         page_title="Bouldern", 
         page_icon="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/271/person-climbing_1f9d7.png")
@@ -29,4 +28,5 @@ if __name__ == "__main__":
     avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
     st.plotly_chart(plot_ave_data(avgdf))
 
+    st.markdown("Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎")
     st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).')
