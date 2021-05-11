@@ -11,7 +11,7 @@ export AWS_PROFILE=boulder
 
 Or set the environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `OWM_API`.
 
-To run backend Dockerfile in local: 
+To run backend Dockerfile in local:
 
 ```bash
 docker build -t boulder-backend -f Dockerfile.backend .
@@ -22,7 +22,7 @@ docker exec -it CONTAINER_NAME /bin/bash
 
 ## Front-end
 
-Run [Streamlit](https://streamlit.io/) locally
+Run [Streamlit](https://streamlit.io/) locally:
 
 ```bash
 streamlit run app.py
@@ -30,15 +30,13 @@ streamlit run app.py
 
 ## Deployment: [Heroku](https://devcenter.heroku.com/)
 
-* [Create app in Heroku](https://dashboard.heroku.com) and set a name. In this case, **`bouldern`**
-* Create `Dockerfile.web`
-  * Add [specific streamlit commands](https://discuss.streamlit.io/t/how-to-use-streamlit-in-docker/1067/2), echo `$PORT` ([important](https://discuss.streamlit.io/t/deploying-heroku-error/1310/3)! The app might not recognize the port otherwise)
-  * **Install dependencies before copying files**: see [Layer caching in this Medium post](https://blog.realkinetic.com/building-minimal-docker-containers-for-python-applications-37d0272c52f3)
-* Create `Dockerfile.backend` with the backend clock function in CMD
-* Set web and backend in `heroku.yml`
-* Create environment variables in Heroku: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `OWM_API` from [PyOWM](https://github.com/csparpa/pyowm)
+1. Create app in Heroku and set a name. In this case, **`bouldern`**.
+2. Create `Dockerfile.web` with [specific streamlit commands](https://discuss.streamlit.io/t/how-to-use-streamlit-in-docker/1067/2)
+3. Create `Dockerfile.backend` with the backend clock function in CMD
+4. Set web and backend in `heroku.yml`
+5. Create environment variables in Heroku: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `OWM_API` from [PyOWM](https://github.com/csparpa/pyowm)
 
-Set up project in Heroku
+Log in to Heroku from the terminal
 
 ```bash
 # attach project to heroku app
@@ -46,6 +44,8 @@ heroku git:remote -a bouldern
 # log in with the CLI. docker must be running
 heroku container:login
 ```
+
+Push and release project in Heroku
 
 ```bash
 # push changes to heroku, --recursive so that it takes web & backend
@@ -58,7 +58,7 @@ heroku ps:scale backend=1
 heroku logs --tail
 ```
 
-Alternatively, you can connect Heroku to Github so that the commits to the main branch trigger a Heroku deployment.
+Alternatively, as the way it's set up now, you can connect Heroku to Github so that the commits to the main branch trigger a Heroku deployment.
 
 ---------
 
@@ -67,7 +67,7 @@ Alternatively, you can connect Heroku to Github so that the commits to the main 
 Legal info about scraping/crawling
 
 1. [Web Scraping and Crawling Are Perfectly Legal, Right?](https://benbernardblog.com/web-scraping-and-crawling-are-perfectly-legal-right/)
-2. [robots.txt file](https://www.boulderwelt-muenchen-ost.de/robots.txt) doesn't disallow scraping the main webpage.
+2. [robots.txt file](https://www.boulderwelt-muenchen-ost.de/robots.txt) doesn't prohibit scraping the main webpage
 3. No prohibitions in AGB or Datenschutzerklärung. No Nutzunsbedingungen
 
 Estimation of circa 300 people for 59% of whole capacity (corona capacity).

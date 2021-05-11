@@ -15,17 +15,17 @@ urls = ['https://www.boulderwelt-muenchen-ost.de/',
 
 def process_occupancy(resp: str) -> tuple():
     # extract occupancy percentage from html. When gyms are closed, the occupancy is ''
-    occupancy = re.search(r'\<div style=".*?"\>(.*?)\<\/div\>', resp).group(1)
+    occupancy = re.search(r'\<div style=".*?"\>(.*?)\<\/div\>', resp)
     try:
-        occupancy = int(occupancy)
+        occupancy = int(occupancy.group(1))
     except:
         occupancy = 0
 
     # due to COVID, if the gym reaches the corona capacity, people have to wait
     # this extracts how many people are waiting
-    waiting = re.search(r"\<span\>(.*?)BOULDERER WARTEN\<\/span\>", resp).group(1)
+    waiting = re.search(r"\<span\>(.*?)BOULDERER WARTEN\<\/span\>", resp)
     try:
-        waiting = int(waiting)
+        waiting = int(waiting.group(1))
     except:
         waiting = 0
 
