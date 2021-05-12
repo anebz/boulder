@@ -9,6 +9,10 @@ gyms = ['Munich East', 'Munich West', 'Dortmund', 'Frankfurt', 'Regensburg']
 gyms_dict = {'Munich East': 'muenchen-ost', 'Munich West': 'muenchen-west', 'Dortmund': 'dortmund', 'Frankfurt': 'frankfurt', 'Regensburg': 'regensburg'}
 bucketname = 'bboulderdataset'
 dfname = 'boulderdata.csv'
+today = datetime.date.today()
+tomorrow = today + datetime.timedelta(days=1)
+yesterday = today - datetime.timedelta(days=1)
+first_date = datetime.date(2020, 9, 3)
 
 if __name__ == "__main__":
 
@@ -29,12 +33,14 @@ if __name__ == "__main__":
     avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
     st.plotly_chart(plot_ave_data(avgdf))
 
+
     if st.button('Data Today'):
-        gym = st.selectbox('Select gym', gyms)
+       # gym = st.selectbox('Select gym', gyms)
         givendaydf = given_day(boulderdf, str(today), gyms_dict[gym])
         st.plotly_chart(plot_given_date(givendaydf))
 
-    gym = st.selectbox('Select gym', gyms)
+
+    # gym = st.selectbox('Select gym', gyms)
     selected_date = st.date_input('Selected date', yesterday)
     if selected_date < first_date:
         st.error('Error: End date must fall after 3rd September 2020.')
