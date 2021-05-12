@@ -46,7 +46,7 @@ def get_weather_info(location: str) -> tuple():
             temp = observation.temperature('celsius')['temp']
             status = observation.status
             break
-        except TimeoutError as ti:
+        except:
             print(f"try i={i}/5. PYOWM gives timeout error at location: {location}")
             sys.stdout.flush()
         time.sleep(5)
@@ -64,9 +64,11 @@ def scrape_websites() -> pd.DataFrame:
     current_time = datetime.now().strftime("%Y/%m/%d %H:%M")
     for webpage in urls:
         gym_name = re.search("-([\w-]+)\.", webpage).group(1)
+        print(f"{webpage}: getting weather info")
         weather_temp, weather_status = get_weather_info(gym_name)
 
         # scrape occupancy and waiting values from HTML response
+        print(f"{webpage}: getting occupancy info")
         html_resp = requests.get(webpage).text
         occupancy, waiting = process_occupancy(html_resp)
         webdata.append((current_time, gym_name, occupancy, waiting, weather_temp, weather_status))
