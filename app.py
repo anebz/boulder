@@ -5,8 +5,9 @@ import streamlit as st
 from src.average_data import avg_data_day, plot_ave_data, given_day, plot_given_date
 
 weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-gyms = ['Munich East', 'Munich West', 'Dortmund', 'Frankfurt', 'Regensburg']
-gyms_dict = {'Munich East': 'muenchen-ost', 'Munich West': 'muenchen-west', 'Dortmund': 'dortmund', 'Frankfurt': 'frankfurt', 'Regensburg': 'regensburg'}
+gyms = ['Munich East', 'Munich West', 'Munich South', 'Dortmund', 'Frankfurt', 'Regensburg']
+gyms_dict = {'Munich East': 'muenchen-ost', 'Munich West': 'muenchen-west', 'Munich South': 'muenchen-sued', 
+            'Dortmund': 'dortmund', 'Frankfurt': 'frankfurt', 'Regensburg': 'regensburg'}
 bucketname = 'bboulderdataset'
 dfname = 'boulderdata.csv'
 today = datetime.date.today()
@@ -16,16 +17,14 @@ first_date = datetime.date(2020, 9, 3)
 
 if __name__ == "__main__":
 
-    # Set page title and favicon.
     st.set_page_config(
         page_title="Bouldern", 
         page_icon="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/271/person-climbing_1f9d7.png")
 
     st.title('Boulder gym tracker')
     # it assumes that credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) are already set as env variables
-    s3 = boto3.client('s3')
-    s3.download_file(bucketname, dfname, dfname)
-    boulderdf = pd.read_csv("boulderdata.csv")
+    boto3.client('s3').download_file(bucketname, dfname, dfname)
+    boulderdf = pd.read_csv(dfname)
 
     gym = st.selectbox('Select gym', gyms)
     day = st.selectbox('Select day of the week', weekdays, index=datetime.datetime.today().weekday())
@@ -53,4 +52,5 @@ if __name__ == "__main__":
         givendaydf = given_day(boulderdf, str(selected_date), gyms_dict[gym])
         st.plotly_chart(plot_given_date(givendaydf))
 
+    st.markdown("Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎")
     st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).')
