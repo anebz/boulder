@@ -10,7 +10,8 @@ s3 = boto3.client('s3')
 bucketname = 'bboulderdataset'
 dfname = 'boulderdata.csv'
 
-@sched.scheduled_job('cron', hour='7-23', minute='*/15')
+# heroku clock is 2h less than the European summer clock
+@sched.scheduled_job('cron', hour='5-21', minute='*/15')
 def run_backend():
     print("Scraping websites")
     sys.stdout.flush()

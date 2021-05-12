@@ -1,5 +1,7 @@
 import os
 import re
+import sys
+import time
 import pyowm
 import requests
 import pandas as pd
@@ -37,9 +39,22 @@ def get_weather_info(location: str) -> tuple():
     Get weather temperature and status for a specific location in Germany
     '''
     location = location if 'muenchen' not in location else 'muenchen'
-    mgr = pyowm.OWM(os.environ['OWM_API']).weather_manager()
-    observation = mgr.weather_at_place(location+',DE').weather
-    return observation.temperature('celsius')['temp'], observation.status
+    for i in range(5):
+        try:
+            mgr = pyowm.OWM(os.environ['OWM_API']).weather_manager()
+            observation = mgr.weather_at_place(location+',DE').weather
+            temp = observation.temperature('celsius')['temp']
+            status = observation.status
+            break
+        except TimeoutError as ti:
+            print(f"try i={i}/5. PYOWM gives timeout error at location: {location}")
+            sys.stdout.flush()
+        time.sleep(5)
+    if not temp:
+        temp = 0
+    if not status:
+        status = ''
+    return temp, status
 
 
 def scrape_websites() -> pd.DataFrame:
