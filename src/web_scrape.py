@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import json
 import time
 import pyowm
 import requests
@@ -15,22 +16,16 @@ urls = ['https://www.boulderwelt-muenchen-ost.de/',
         'https://www.boulderwelt-regensburg.de/']
 
 
-def process_occupancy(resp: str) -> tuple():
-    # extract occupancy percentage from html. When gyms are closed, the occupancy is ''
-    occupancy = re.search(r'\<div style=".*?"\>(.*?)\<\/div\>', resp)
-    try:
-        occupancy = int(occupancy.group(1))
-    except:
+def process_occupancy(url: str) -> tuple():
+    # make POST request to admin-ajax.php 
+    req = requests.post(f"{url}/wp-admin/admin-ajax.php", data={"action": "cxo_get_crowd_indicator"})
+    if req.status_code == 200:
+        data = json.loads(req.text)
+        occupancy = data['percent']
+        waiting = data['queue']
+    else:
         occupancy = 0
-
-    # due to COVID, if the gym reaches the corona capacity, people have to wait
-    # this extracts how many people are waiting
-    waiting = re.search(r"\<span\>(.*?)BOULDERER WARTEN\<\/span\>", resp)
-    try:
-        waiting = int(waiting.group(1))
-    except:
         waiting = 0
-
     return occupancy, waiting
 
 
@@ -56,21 +51,19 @@ def get_weather_info(location: str) -> tuple():
         status = ''
     return temp, status
 
-
 def scrape_websites() -> pd.DataFrame:
 
     webdata = []
     # Winter time: (datetime.now() + timedelta(hours=1))
     current_time = datetime.now().strftime("%Y/%m/%d %H:%M")
-    for webpage in urls:
-        gym_name = re.search("-([\w-]+)\.", webpage).group(1)
-        print(f"{webpage}: getting weather info")
+    for url in urls:
+        gym_name = re.search("-([\w-]+)\.", url).group(1)
+        print(f"{gym_name}: getting weather info")
         weather_temp, weather_status = get_weather_info(gym_name)
 
         # scrape occupancy and waiting values from HTML response
-        print(f"{webpage}: getting occupancy info")
-        html_resp = requests.get(webpage).text
-        occupancy, waiting = process_occupancy(html_resp)
+        print(f"{gym_name}: getting occupancy info")
+        occupancy, waiting = process_occupancy(url)
         webdata.append((current_time, gym_name, occupancy, waiting, weather_temp, weather_status))
 
     webdf = pd.DataFrame(
