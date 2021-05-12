@@ -55,7 +55,8 @@ def scrape_websites() -> pd.DataFrame:
 
     webdata = []
     # Winter time: (datetime.now() + timedelta(hours=1))
-    current_time = datetime.now().strftime("%Y/%m/%d %H:%M")
+    # +2 because Heroku time is 2h less than German time
+    current_time = (datetime.now() + timedelta(hours=2)).strftime("%Y/%m/%d %H:%M")
     for url in urls:
         gym_name = re.search("-([\w-]+)\.", url).group(1)
         print(f"{gym_name}: getting weather info")
