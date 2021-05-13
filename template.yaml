@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: boulder-backend
+
+Resources:
+  BoulderBackendFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./src
+      Handler: web_scrape.lambda_handler
+      Runtime: python3.8
+      Events:
+        StartScrapingEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0/15 7-23 ? * MON-SUN *)

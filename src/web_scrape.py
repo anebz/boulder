@@ -3,9 +3,11 @@ import re
 import sys
 import json
 import time
+import boto3
 import pyowm
 import requests
 import pandas as pd
+from io import StringIO
 from datetime import datetime, timedelta
 
 urls = ['https://www.boulderwelt-muenchen-ost.de/',
@@ -73,3 +75,36 @@ def scrape_websites() -> pd.DataFrame:
             data=webdata,
             columns=['current_time', 'gym_name', 'occupancy', 'waiting', 'weather_temp', 'weather_status'])
     return webdf
+
+
+def lambda_handler(event, context):
+    print("Scraping websites")
+    sys.stdout.flush()
+    webdf = scrape_websites()
+
+    # only update if occupancy in gyms is > 0
+    if (webdf['occupancy'] == 0).all():
+        print("Nothing was scraped, S3 is not updated")
+        sys.stdout.flush()
+        return
+
+    # download dataset from S3
+    s3 = boto3.client('s3')
+    bucketname = 'bboulderdataset'
+    dfname = 'boulderdata.csv'
+    #s3.download_file(bucketname, dfname, dfname)
+    csv_obj = s3.get_object(Bucket=bucketname, Key=dfname)
+    csv_string = csv_obj['Body'].read().decode('utf-8')
+    s3df = pd.read_csv(StringIO(csv_string))
+
+    # merge boulderdata with tmp file
+    webdf.append(s3df)
+
+    csv_buf = StringIO()
+    webdf.to_csv(csv_buf, header=True, index=False)
+    csv_buf.seek(0)
+    s3.put_object(Bucket=bucketname, Body=csv_buf.getvalue(), Key=dfname)
+    #s3.upload_file(dfname, bucketname, dfname)
+    print("Scraping done and data updated to S3")
+    sys.stdout.flush()
+    return

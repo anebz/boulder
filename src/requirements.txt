@@ -1,4 +1,4 @@
-apscheduler
 boto3
+numpy==1.20.2
 pandas
 pyowm
