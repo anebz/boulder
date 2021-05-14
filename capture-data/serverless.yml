@@ -1,0 +1,65 @@
+service: capture-data
+
+plugins:
+  - serverless-python-requirements
+custom:
+  myStage: ${self:provider.stage}
+  myProfile:
+    boulder: boulder
+  sourceBucket:
+    boulder: bboulderdataset
+  pythonRequirements:
+    dockerizePip: false
+
+frameworkVersion: "2"
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: boulder
+  profile: ${self:custom.myProfile.${self:custom.myStage}}
+  region: eu-central-1
+
+  environment:
+    OWM_API: ${file(../config.json):OWM_API}
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+      Resource:
+        {
+          "Fn::Join":
+            [
+              "",
+              [
+                "arn:aws:s3:::",
+                "${self:custom.sourceBucket.${self:custom.myStage}}",
+              ],
+            ],
+        }
+    - Effect: "Allow"
+      Action:
+        - "s3:GetObject"
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - "${self:custom.sourceBucket.${self:custom.myStage}}"
+            - "/*"
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - "${self:custom.sourceBucket.${self:custom.myStage}}"
+            - "/*"
+
+functions:
+  s3tos3:
+    handler: web_scrape.lambda_handler
+    timeout: 60
+    events:
+      - schedule: cron(0/15 5-21 ? * MON-SUN *)
