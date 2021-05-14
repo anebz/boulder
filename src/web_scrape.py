@@ -65,7 +65,7 @@ def scrape_websites() -> pd.DataFrame:
         # scrape occupancy and waiting values from HTML response
         print(f"{gym_name}: getting occupancy info")
         occupancy, waiting = process_occupancy(url)
-        if occupancy == 0 or waiting == 0:
+        if occupancy == 0 and waiting == 0:
             continue
         webdata.append((current_time, gym_name, occupancy, waiting, weather_temp, weather_status))
 
