@@ -133,4 +133,5 @@ dmypy.json
 #*.ipynb
 *.json
 *.csv
-keys.py
+.serverless/
+node_modules/

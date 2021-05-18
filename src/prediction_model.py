@@ -42,3 +42,6 @@ def train_model(X, y):
     model = xgb.XGBRegressor(objective='reg:squarederror', verbosity=1)
     model.fit(X, y)
     return model
+
+def model_predict(X, model):
+    return model.predict(X)
