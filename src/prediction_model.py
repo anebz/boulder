@@ -7,12 +7,10 @@ import matplotlib.pyplot as plt
 # Show all messages, including ones pertaining to debugging
 xgb.set_config(verbosity=2)
 
-
 def one_hot_encode_col(df: pd.DataFrame, col: str) -> pd.DataFrame:
     df = pd.concat([df, pd.get_dummies(df[col])], axis=1)
-    df.drop(col, axis=1, inplace=True)
+    df = df.drop(col, axis=1)
     return df
-
 
 def preprocess(df: pd.DataFrame) -> (np.array, np.array):
 
