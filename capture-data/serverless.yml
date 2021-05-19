@@ -1,7 +1,10 @@
 service: capture-data
 
+frameworkVersion: "2"
+
 plugins:
   - serverless-python-requirements
+
 custom:
   myStage: ${self:provider.stage}
   myProfile:
@@ -11,8 +14,6 @@ custom:
   pythonRequirements:
     dockerizePip: false
 
-frameworkVersion: "2"
-
 provider:
   name: aws
   runtime: python3.8
@@ -21,23 +22,11 @@ provider:
   region: eu-central-1
 
   environment:
-    OWM_API: ${file(../config.json):OWM_API}
+    OWM_API: ${file(config.json):OWM_API}
+    BUCKETNAME: bboulderdataset
+    CSVNAME: boulderdata.csv
 
   iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "s3:ListBucket"
-      Resource:
-        {
-          "Fn::Join":
-            [
-              "",
-              [
-                "arn:aws:s3:::",
-                "${self:custom.sourceBucket.${self:custom.myStage}}",
-              ],
-            ],
-        }
     - Effect: "Allow"
       Action:
         - "s3:GetObject"

@@ -75,21 +75,21 @@ def lambda_handler(event, context):
     webdf = scrape_websites()
 
     # only update if occupancy in gyms is > 0
-    if (webdf['occupancy'] == 0).all():
+    if webdf.empty:
         print("Nothing was scraped, S3 is not updated")
         return
 
     # download dataset from S3
     s3 = boto3.client('s3')
-    bucketname = 'bboulderdataset'
-    dfname = 'boulderdata.csv'
+    dfname = os.environ['CSVNAME']
+    dfpath = f"/tmp/{os.environ['CSVNAME']}"
 
     # download dataset from S3
-    s3.download_file(bucketname, dfname, f"/tmp/{dfname}")
+    s3.download_file(os.environ['BUCKETNAME'], dfname, dfpath)
 
     # merge boulderdata with tmp file
-    webdf.append(pd.read_csv(f"/tmp/{dfname}")).to_csv(f"/tmp/{dfname}", index=False)
-    s3.upload_file(f"/tmp/{dfname}", bucketname, dfname)
+    webdf.append(pd.read_csv(dfpath)).to_csv(dfpath, index=False)
+    s3.upload_file(dfpath, os.environ['BUCKETNAME'], dfname)
 
     print("Scraping done and data updated to S3")
     return
