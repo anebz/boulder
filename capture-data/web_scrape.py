@@ -6,7 +6,6 @@ import boto3
 import pyowm
 import requests
 import pandas as pd
-from io import StringIO
 from datetime import datetime, timedelta
 
 urls = ['https://www.boulderwelt-muenchen-ost.de/',
