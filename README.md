@@ -23,6 +23,7 @@ docker exec -it CONTAINER_NAME /bin/bash
 ## Backend Lambda
 
 ```bash
+cd capture_data/
 sls --verbose
 sls plugin install -n serverless-python-requirements
 serverless deploy
