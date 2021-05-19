@@ -130,7 +130,6 @@ dmypy.json
 
 # other
 .vscode/
-#*.ipynb
 *.json
 *.csv
 .serverless/
