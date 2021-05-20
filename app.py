@@ -27,20 +27,7 @@ if __name__ == "__main__":
     boulderdf = pd.read_csv(dfname)
 
     gym = st.selectbox('Select gym', gyms)
-    day = st.selectbox('Select day of the week', weekdays, index=datetime.datetime.today().weekday())
-
-    avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
-    st.plotly_chart(plot_ave_data(avgdf))
-
-
-    if st.button('Data Today'):
-       # gym = st.selectbox('Select gym', gyms)
-        givendaydf = given_day(boulderdf, str(today), gyms_dict[gym])
-        st.plotly_chart(plot_given_date(givendaydf))
-
-
-    # gym = st.selectbox('Select gym', gyms)
-    selected_date = st.date_input('Selected date', yesterday)
+    selected_date = st.date_input('Selected date', today)
     if selected_date < first_date:
         st.error('Error: End date must fall after 3rd September 2020.')
     elif selected_date > tomorrow:
@@ -48,9 +35,17 @@ if __name__ == "__main__":
     elif selected_date < tomorrow:
         st.success('Selected date: `%s`\n' % (selected_date))
 
-    if selected_date < today:
+    if selected_date < tomorrow:
         givendaydf = given_day(boulderdf, str(selected_date), gyms_dict[gym])
         st.plotly_chart(plot_given_date(givendaydf))
+
+
+    if st.button('See average data'):
+        day = st.selectbox('Select day of the week', weekdays, index=datetime.datetime.today().weekday())
+        avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
+        st.plotly_chart(plot_ave_data(avgdf))
+
+
 
     st.markdown("Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎")
     st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).')
