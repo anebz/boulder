@@ -10,10 +10,6 @@ gyms_dict = {'Munich East': 'muenchen-ost', 'Munich West': 'muenchen-west', 'Mun
             'Dortmund': 'dortmund', 'Frankfurt': 'frankfurt', 'Regensburg': 'regensburg'}
 bucketname = 'bboulderdataset'
 dfname = 'boulderdata.csv'
-today = datetime.date.today()
-tomorrow = today + datetime.timedelta(days=1)
-yesterday = today - datetime.timedelta(days=1)
-first_date = datetime.date(2020, 9, 3)
 
 if __name__ == "__main__":
 
@@ -26,10 +22,15 @@ if __name__ == "__main__":
     boto3.client('s3').download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
 
+    today = datetime.date.today()
+    tomorrow = today + datetime.timedelta(days=1)
+    yesterday = today - datetime.timedelta(days=1)
+    first_date = datetime.date(2021, 5, 12)
+    
     gym = st.selectbox('Select gym', gyms)
     selected_date = st.date_input('Selected date', today)
     if selected_date < first_date:
-        st.error('Error: End date must fall after 3rd September 2020.')
+        st.error('Error: End date must fall after 2021 May 12th.')
     elif selected_date > tomorrow:
         st.error('Error: Selected date must fall betweem 3rd September 2020 and now.')
     elif selected_date < tomorrow:
@@ -39,13 +40,10 @@ if __name__ == "__main__":
         givendaydf = given_day(boulderdf, str(selected_date), gyms_dict[gym])
         st.plotly_chart(plot_given_date(givendaydf))
 
-
     if st.button('See average data'):
         day = st.selectbox('Select day of the week', weekdays, index=datetime.datetime.today().weekday())
         avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
         st.plotly_chart(plot_ave_data(avgdf))
-
-
 
     st.markdown("Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎")
     st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).')
