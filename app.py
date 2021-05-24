@@ -2,7 +2,7 @@ import boto3
 import datetime
 import pandas as pd
 import streamlit as st
-from src.average_data import avg_data_day, plot_ave_data, given_day, plot_given_date
+from src.visualize_data import avg_data_day, plot_data, given_day
 
 weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 gyms = ['Munich East', 'Munich West', 'Munich South', 'Dortmund', 'Frankfurt', 'Regensburg']
@@ -35,13 +35,13 @@ if __name__ == "__main__":
     if givendaydf.empty:
         st.error('There is no data to show for this day. The gym might be closed')
     else:
-        st.plotly_chart(plot_given_date(givendaydf))
+        st.plotly_chart(plot_data(givendaydf))
 
     # display average data
     if st.button('See average data'):
         day = st.selectbox('Select day of the week', weekdays, index=today.weekday())
         avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
-        st.plotly_chart(plot_ave_data(avgdf))
+        st.plotly_chart(plot_data(avgdf))
 
     st.markdown("Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎")
     st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).')
