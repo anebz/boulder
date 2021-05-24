@@ -27,6 +27,7 @@ if __name__ == "__main__":
     first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['current_time'], "%Y/%m/%d %H:%M")
 
     # ask user for gym and date input
+    st.markdown(f"## How full is my gym today?")
     gym = st.selectbox('Select gym', gyms)
     selected_date = st.date_input('Selected date', today, min_value=first_date, max_value=today)
 
@@ -37,10 +38,12 @@ if __name__ == "__main__":
     else:
         st.plotly_chart(plot_data(givendaydf))
 
-    # display average data
-    if st.button('See average data'):
-        day = st.selectbox('Select day of the week', weekdays, index=today.weekday())
-        avgdf = avg_data_day(boulderdf, weekdays.index(day), gyms_dict[gym])
+    st.markdown(f"## Average data for {gym}")
+    avg_day = st.selectbox('Select day of the week', weekdays, index=today.weekday())
+    avgdf = avg_data_day(boulderdf, weekdays.index(avg_day), gyms_dict[gym])
+    if avgdf.empty:
+        st.error('There is no data to show at all. The gym might be closed for a long time')
+    else:
         st.plotly_chart(plot_data(avgdf))
 
     st.markdown("Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎")
