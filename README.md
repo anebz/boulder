@@ -2,35 +2,28 @@
 
 ![ ](boulder.png)
 
-## Backend docker
-
-Set AWS profile
-```
-export AWS_PROFILE=boulder
-```
-
-Or set the environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `OWM_API`.
-
-To run backend Dockerfile in local:
-
-```bash
-docker build -t boulder-backend -f Dockerfile.backend .
-docker run -d boulder-backend
-# check container name with docker ps
-docker exec -it CONTAINER_NAME /bin/bash
-```
-
 ## Backend Lambda
+
+Set up the [serverless](https://www.serverless.com/framework/docs/getting-started/) directory. This requires AWS credentials.
 
 ```bash
 cd capture_data/
 sls --verbose
 sls plugin install -n serverless-python-requirements
+```
+
+Deploy and invoke the Lambda function.
+
+```bash
 serverless deploy
 serverless invoke -f s3tos3 --log
 ```
 
 ## Front-end
+
+```python
+pip install -r requirements.txt
+```
 
 Run [Streamlit](https://streamlit.io/) locally:
 
@@ -38,13 +31,12 @@ Run [Streamlit](https://streamlit.io/) locally:
 streamlit run app.py
 ```
 
-## Deployment: [Heroku](https://devcenter.heroku.com/)
+### Front-end deployment: [Heroku](https://devcenter.heroku.com/)
 
 1. Create app in Heroku and set a name. In this case, **`bouldern`**.
-2. Create `Dockerfile.web` with [specific streamlit commands](https://discuss.streamlit.io/t/how-to-use-streamlit-in-docker/1067/2)
-3. Create `Dockerfile.backend` with the backend clock function in CMD
-4. Set web and backend in `heroku.yml`
-5. Create environment variables in Heroku: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `OWM_API` from [PyOWM](https://github.com/csparpa/pyowm)
+2. Create `Dockerfile` with [specific streamlit commands](https://discuss.streamlit.io/t/how-to-use-streamlit-in-docker/1067/2)
+3. Set web and backend in `heroku.yml`
+4. Create environment variables in Heroku: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `OWM_API` from [PyOWM](https://github.com/csparpa/pyowm)
 
 Log in to Heroku from the terminal
 
@@ -58,12 +50,10 @@ heroku container:login
 Push and release project in Heroku
 
 ```bash
-# push changes to heroku, --recursive so that it takes web & backend
-heroku container:push --recursive
+# push changes to heroku
+heroku container:push web
 # release app
-heroku container:release web backend
-# upscale backend, it's off by default
-heroku ps:scale backend=1
+heroku container:release web
 # check logs
 heroku logs --tail
 ```
