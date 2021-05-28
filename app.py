@@ -27,7 +27,13 @@ if __name__ == "__main__":
     first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['current_time'], "%Y/%m/%d %H:%M")
 
     # ask user for gym and date input
-    st.markdown(f"## How full is my gym today?")
+    st.markdown("""
+    ## How full is my gym today?\n
+    Currently only the Munich and Frankfurt gyms are open. But Frankfurt is following a Click & Climb system and not showing the occupancy data.
+    Therefore, for now we can only show data for the 3 Munich gyms.\n
+    Due to Corona, gyms have reduced their capacity. Once the Corona capacity is reached, people have to wait to enter the gym.\n
+    You can see the occupancy as a percentage of Corona capacity, the people in the queue and the weather in the plot.
+    """)
     gym = st.selectbox('Select gym', gyms)
     selected_date = st.date_input('Selected date', today, min_value=first_date, max_value=today)
 
@@ -36,15 +42,18 @@ if __name__ == "__main__":
     if givendaydf.empty:
         st.error('There is no data to show for this day. The gym might be closed')
     else:
-        st.plotly_chart(plot_data(givendaydf))
+        st.plotly_chart(plot_data(givendaydf), use_container_width=True)
 
-    st.markdown(f"## Average data for {gym}")
+    st.markdown(f"""
+    ## Average data for {gym}\n
+    This plot shows the average occupancy, queue and weather for the given weekday.
+    """)
     avg_day = st.selectbox('Select day of the week', weekdays, index=today.weekday())
     avgdf = avg_data_day(boulderdf, weekdays.index(avg_day), gyms_dict[gym])
     if avgdf.empty:
         st.error('There is no data to show at all. The gym might be closed for a long time')
     else:
-        st.plotly_chart(plot_data(avgdf))
+        st.plotly_chart(plot_data(avgdf), use_container_width=True)
 
     st.markdown("Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎")
     st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).')

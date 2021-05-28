@@ -39,9 +39,9 @@ def plot_data(df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
     # dash options include 'dash', 'dot', and 'dashdot
     fig.add_trace(go.Scatter(x=df.current_time, y=df.occupancy, name='Occupancy', line=dict(color='firebrick', width=4)))
-    fig.add_trace(go.Scatter(x=df.current_time, y=df.waiting, name='Waiting', line=dict(color='royalblue', width=4, dash='dash')))
+    fig.add_trace(go.Scatter(x=df.current_time, y=df.waiting, name='Queue', line=dict(color='royalblue', width=4, dash='dash')))
     fig.add_trace(go.Scatter(x=df.current_time, y=df.weather_temp, name='Weather Temp', line = dict(color='green', width=4, dash='dot')))
-    fig.update_layout(title='Plotting occupancy, waiting people and weather', xaxis_title='Time')
+    fig.update_layout(title='Plotting occupancy, queue and weather', xaxis_title='Time')
 
     fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
     return fig
