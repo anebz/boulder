@@ -28,6 +28,7 @@ pip install -r requirements.txt
 Run [Streamlit](https://streamlit.io/) locally:
 
 ```bash
+export AWS_PROFILE=my_profile
 streamlit run app.py
 ```
 
