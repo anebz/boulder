@@ -37,12 +37,12 @@ if __name__ == "__main__":
     Currently only the Munich and Frankfurt gyms are open. But Frankfurt is following a Click & Climb system and not showing the occupancy data.
     Therefore, for now we can only show data for the 3 Munich gyms.\n
     Due to Corona, gyms have reduced their capacity. Once the Corona capacity is reached, people have to wait to enter the gym.\n
-    You can see the occupancy as a percentage of Corona capacity, the people in the queue and the weather in the plot.
+    You can see the occupancy as a percentage of Corona capacity and the weather in the plot.\n
+    If the occupancy is above 100%, that means the Corona capacity has been filled and people are waiting to enter the gym.
     """)
     selected_gym = st.selectbox('Select gym', gyms)
     today = datetime.date.today()
     selected_date = st.date_input('Selected date', today, min_value=first_date, max_value=today)
-
 
     # display the data for the given day
     givendaydf = given_day(boulderdf, str(selected_date), gyms_dict[selected_gym])
