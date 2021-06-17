@@ -2,6 +2,7 @@ import os
 import boto3
 import datetime
 import pandas as pd
+import xgboost as xgb
 import streamlit as st
 from src.visualize_data import avg_data_day, plot_data, given_day
 
@@ -10,6 +11,8 @@ gyms_dict = {'Munich East': 'muenchen-ost', 'Munich West': 'muenchen-west', 'Mun
             'Dortmund': 'dortmund', 'Frankfurt': 'frankfurt', 'Regensburg': 'regensburg'}
 bucketname = 'bboulderdataset'
 dfname = 'boulderdata.csv'
+modelname = 'xgb.model'
+s3 = boto3.client('s3')
 s3_buffer = 1 # 1min
 
 if __name__ == "__main__":
@@ -25,20 +28,20 @@ if __name__ == "__main__":
         # add buffer to give time to S3 to capture data
         current_min += s3_buffer
         # it assumes that credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) are already set as env variables
-        boto3.client('s3').download_file(bucketname, dfname, dfname)
+        s3.download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
-
-    # get first available date, the last row in the dataframe
-    first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['current_time'], "%Y/%m/%d %H:%M")
 
     # ask user for gym and date input
     st.markdown("""
     ## How full is my gym today?\n
     Due to Corona, gyms have reduced their capacity. Once the Corona capacity is reached, people have to wait to enter the gym.\n
+    You can see the occupancy as a percentage of Corona capacity and the weather in the plot.\n
     If the occupancy is above 100%, that means the Corona capacity has been filled and people are waiting to enter the gym.
     """)
     selected_gym = st.selectbox('Select gym', gyms)
     today = datetime.date.today()
+    # get first available date, the last row in the dataframe
+    first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['current_time'], "%Y/%m/%d %H:%M")
     selected_date = st.date_input('Selected date', today, min_value=first_date, max_value=today)
 
     # display the data for the given day

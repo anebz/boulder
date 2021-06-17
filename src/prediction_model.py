@@ -22,7 +22,7 @@ def preprocess(df: pd.DataFrame) -> (np.array, np.array):
     df.drop('current_time', axis=1, inplace=True)
 
     # join occupancy and waiting into a single column
-    df['occupancy'] = df.apply(lambda r: r.occupancy + r.waiting/100, axis=1)
+    df['occupancy'] = df.apply(lambda r: r.occupancy + r.waiting/10, axis=1)
     df.drop('waiting', axis=1, inplace=True)
 
     # one-hot encode the categorical variables

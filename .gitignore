@@ -132,7 +132,7 @@ dmypy.json
 .vscode/
 *.json
 *.csv
-keys.py
+*.model
 .DS_Store
 .serverless/
 node_modules/
