@@ -49,6 +49,10 @@ def given_day(boulderdf: pd.DataFrame, selected_date: str, gym: str) -> pd.DataF
     boulderdf = boulderdf[boulderdf['current_time'].str.contains(selected_date)]
     boulderdf = boulderdf[boulderdf['gym_name'] == gym]
 
+    # if less than 10 values have been registered, show nothing
+    if boulderdf.shape[0] < 10:
+        return pd.DataFrame()
+
     # aggregate occupancy and queue
     boulderdf['occupancy'] = boulderdf.apply(lambda r: r.occupancy + r.waiting/10, axis=1)
     boulderdf.drop(['waiting'], inplace=True, axis=1)
@@ -59,6 +63,7 @@ def given_day(boulderdf: pd.DataFrame, selected_date: str, gym: str) -> pd.DataF
 
     # sort the data by time
     boulderdf.sort_values(by=['current_time'], inplace=True)
+
     return boulderdf
 
 

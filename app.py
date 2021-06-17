@@ -34,10 +34,7 @@ if __name__ == "__main__":
     # ask user for gym and date input
     st.markdown("""
     ## How full is my gym today?\n
-    Currently only the Munich and Frankfurt gyms are open. But Frankfurt is following a Click & Climb system and not showing the occupancy data.
-    Therefore, for now we can only show data for the 3 Munich gyms.\n
     Due to Corona, gyms have reduced their capacity. Once the Corona capacity is reached, people have to wait to enter the gym.\n
-    You can see the occupancy as a percentage of Corona capacity and the weather in the plot.\n
     If the occupancy is above 100%, that means the Corona capacity has been filled and people are waiting to enter the gym.
     """)
     selected_gym = st.selectbox('Select gym', gyms)
