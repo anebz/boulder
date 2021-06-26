@@ -51,4 +51,4 @@ functions:
     handler: web_scrape.lambda_handler
     timeout: 60
     events:
-      - schedule: cron(0/15 5-21 ? * MON-SUN *)
+      - schedule: cron(0/20 5-21 ? * MON-SUN *)

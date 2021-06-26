@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     # download data only if it's in the 15min interval. give 1min extra buffer for Lambda to gather the data
     current_min = datetime.datetime.now().minute
-    if current_min in [0, 15, 30, 45] or not os.path.isfile(dfname):
+    if current_min in [0, 20, 40] or not os.path.isfile(dfname):
         # add buffer to give time to S3 to capture data
         current_min += s3_buffer
         # it assumes that credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) are already set as env variables
