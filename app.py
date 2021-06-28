@@ -20,10 +20,8 @@ if __name__ == "__main__":
     st.title('Boulder gym tracker')
 
     # download data only if it's in the 15min interval. give 1min extra buffer for Lambda to gather the data
-    current_min = datetime.datetime.now().minute
-    if current_min in [0, 15, 30, 45] or not os.path.isfile(dfname):
-        # add buffer to give time to S3 to capture data
-        current_min += s3_buffer
+    current_min = datetime.datetime.now().minute - s3_buffer
+    if current_min in [0, 20, 40] or not os.path.isfile(dfname):
         # it assumes that credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) are already set as env variables
         boto3.client('s3').download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
@@ -50,8 +48,7 @@ if __name__ == "__main__":
 
     st.markdown(f"""
     ## Average data for {selected_gym}\n
-    This plot shows the average occupancy, queue and weather for the given weekday.
-    """)
+    This plot shows the average occupancy, queue and weather for the given weekday""")
     weekdays = [(today + datetime.timedelta(days=x)).strftime("%A") for x in range(7)]
     avg_day = st.selectbox('Select day of the week', weekdays)
     avgdf = avg_data_day(boulderdf, weekdays.index(avg_day), gyms_dict[selected_gym])
@@ -60,5 +57,6 @@ if __name__ == "__main__":
     else:
         st.plotly_chart(plot_data(avgdf))
 
-    st.markdown("Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎")
-    st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).')
+    st.markdown(f"""
+    Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎\n
+    Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).""")

@@ -38,20 +38,16 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     return avgdf
 
 
-def given_day(boulderdf: pd.DataFrame, selected_date: str, gym: str) -> pd.DataFrame:
+def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     '''
     Input: dataframe with all data, a specific date, gym name
     Output: dataframe with all of the data for the given input parameters
     '''
     # make conversion from streamlit-type datetime to format in df
-    selected_date = selected_date.replace('-', '/')
+    date = date.replace('-', '/')
     # obtain only the data for the specific weekday and gym
-    boulderdf = boulderdf[boulderdf['current_time'].str.contains(selected_date)]
+    boulderdf = boulderdf[boulderdf['current_time'].str.contains(date)]
     boulderdf = boulderdf[boulderdf['gym_name'] == gym]
-
-    # if less than 10 values have been registered, show nothing
-    if boulderdf.shape[0] < 10:
-        return pd.DataFrame()
 
     # aggregate occupancy and queue
     boulderdf['occupancy'] = boulderdf.apply(lambda r: r.occupancy + r.waiting/10, axis=1)
@@ -60,6 +56,9 @@ def given_day(boulderdf: pd.DataFrame, selected_date: str, gym: str) -> pd.DataF
     # transform date to hour and minute format
     boulderdf['current_time'] = boulderdf['current_time'].apply(lambda x: x.split()[1])
     boulderdf.drop(['gym_name'], axis=1, inplace=True)
+
+    # delete entry at 23:20 (cron job bug)
+    boulderdf = boulderdf[~boulderdf['current_time'].str.contains('23:20')]
 
     # sort the data by time
     boulderdf.sort_values(by=['current_time'], inplace=True)
