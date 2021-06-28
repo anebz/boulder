@@ -19,11 +19,8 @@ if __name__ == "__main__":
         page_icon="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/271/person-climbing_1f9d7.png")
     st.title('Boulder gym tracker')
 
-    # download data only if it's in the 15min interval. give 1min extra buffer for Lambda to gather the data
-    current_min = datetime.datetime.now().minute - s3_buffer
-    if current_min in [0, 20, 40] or not os.path.isfile(dfname):
-        # it assumes that credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) are already set as env variables
-        boto3.client('s3').download_file(bucketname, dfname, dfname)
+    # download data
+    boto3.client('s3').download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
 
     # get first available date, the last row in the dataframe

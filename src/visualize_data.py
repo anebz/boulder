@@ -16,24 +16,15 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
 
     # aggregate occupancy and queue
     boulderdf['occupancy'] = boulderdf.apply(lambda r: r.occupancy + r.waiting/100, axis=1)
-    boulderdf.drop(['waiting'], inplace=True, axis=1)
 
     # transform date to hour and minute format
     boulderdf['current_time'] = boulderdf['current_time'].dt.strftime('%H:%M')
-    boulderdf.drop(['gym_name'], inplace=True, axis=1)
 
-    # iterate through the hours and obtain the means for all values
-    avgdf = []
-    for t in boulderdf['current_time'].unique():
-        for_time = boulderdf[boulderdf['current_time'] == t]
-        avgdf.append([
-            t,
-            round(for_time['occupancy'].mean(), 2),
-            int(for_time['weather_temp'].mean()),
-            for_time['weather_status'].max()
-        ])
+    # obtain the time and occupancy means
+    avgdf = [[t, round(boulderdf[boulderdf['current_time'] == t]['occupancy'].mean())]\
+            for t in boulderdf['current_time'].unique()]
 
-    avgdf = pd.DataFrame(data=avgdf, columns=['current_time', 'occupancy', 'weather_temp', 'weather_status'])
+    avgdf = pd.DataFrame(data=avgdf, columns=['current_time', 'occupancy'])
     avgdf.sort_values(by=['current_time'], inplace=True)
     return avgdf
 
@@ -51,7 +42,7 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
 
     # aggregate occupancy and queue
     boulderdf['occupancy'] = boulderdf.apply(lambda r: r.occupancy + r.waiting/10, axis=1)
-    boulderdf.drop(['waiting'], inplace=True, axis=1)
+    boulderdf.drop(['waiting'], axis=1, inplace=True)
 
     # transform date to hour and minute format
     boulderdf['current_time'] = boulderdf['current_time'].apply(lambda x: x.split()[1])
@@ -70,8 +61,8 @@ def plot_data(df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
     # dash options include 'dash', 'dot', and 'dashdot
     fig.add_trace(go.Scatter(x=df.current_time, y=df.occupancy, name='Occupancy', line=dict(color='firebrick', width=4)))
-    fig.add_trace(go.Scatter(x=df.current_time, y=df.weather_temp, name='Temperature (Celsius)', line = dict(color='green', width=4, dash='dot')))
-    fig.update_layout(title='Plotting occupancy and weather', xaxis_title='Time')
+    if 'weather_temp' in df:
+        fig.add_trace(go.Scatter(x=df.current_time, y=df.weather_temp, name='Temperature', line=dict(color='green', width=4, dash='dot')))
 
     fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
     return fig
