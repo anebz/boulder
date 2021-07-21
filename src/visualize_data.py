@@ -1,4 +1,5 @@
 import datetime
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -55,6 +56,34 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     boulderdf.sort_values(by=['current_time'], inplace=True)
 
     return boulderdf
+
+
+def preprocess_current_data(boulderdf: pd.DataFrame, gyms: dict, selected_gym: str, current_time: datetime.date):
+
+    with open('onehotlist.txt') as fin:
+        onehotlist = fin.read().splitlines()
+    today_data = [0] * len(onehotlist)
+
+    # parse today's weekday
+    today_weekday = current_time.strftime('%A')
+    today_data[onehotlist.index(today_weekday)] = 1
+
+    # obtain minute to predict = current_min + 20min (next interval)
+    next_min = round(current_time.hour + (current_time.minute + 20)/60, 2)
+    today_data[onehotlist.index('time')] = next_min
+
+    # one-hot selected gym
+    today_data[onehotlist.index(gyms[selected_gym])] = 1
+
+    # obtain latest weather
+    latest_gym_entry = boulderdf.loc[boulderdf['gym_name'] == gyms[selected_gym]].iloc[0]
+    # one-hot weather status
+    today_data[onehotlist.index('weather_temp')] = latest_gym_entry['weather_temp']
+    today_data[onehotlist.index(latest_gym_entry['weather_status'])] = 1
+
+    # convert to numpy array
+    X_today = [np.asarray(today_data)]
+    return X_today
 
 
 def plot_data(df: pd.DataFrame) -> go.Figure:

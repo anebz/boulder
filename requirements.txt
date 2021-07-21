@@ -1,3 +1,6 @@
 boto3
+numpy
+pandas
 plotly
+scikit-learn==0.23.1
 streamlit>=0.79.0

@@ -1,11 +1,9 @@
+import pickle
 import numpy as np
 import pandas as pd
-import xgboost as xgb
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-# Show all messages, including ones pertaining to debugging
-xgb.set_config(verbosity=2)
 
 def one_hot_encode_col(df: pd.DataFrame, col: str) -> pd.DataFrame:
     df = pd.concat([df, pd.get_dummies(df[col])], axis=1)
@@ -13,16 +11,15 @@ def one_hot_encode_col(df: pd.DataFrame, col: str) -> pd.DataFrame:
     return df
 
 def preprocess(df: pd.DataFrame) -> (np.array, np.array):
-
     # datetime processing. obtain weekday, and time as hours and minutes rounded up
     # ex. 16:45 becomes 16.75. 15:30 becomes 15.50
     df['current_time'] = pd.to_datetime(df['current_time'])
     df['weekday'] = df['current_time'].apply(lambda x: x.strftime('%A'))
-    df['time'] = df['current_time'].apply(lambda x: x.hour + x.minute/60)
+    df['time'] = df['current_time'].apply(lambda x: round(x.hour + x.minute/60, 2))
     df.drop('current_time', axis=1, inplace=True)
 
     # join occupancy and waiting into a single column
-    df['occupancy'] = df.apply(lambda r: r.occupancy + r.waiting/100, axis=1)
+    df['occupancy'] = df.apply(lambda r: r.occupancy + r.waiting/10, axis=1)
     df.drop('waiting', axis=1, inplace=True)
 
     # one-hot encode the categorical variables
@@ -36,10 +33,30 @@ def preprocess(df: pd.DataFrame) -> (np.array, np.array):
 
     return X, y
 
-def train_model(X, y):
+def train_xgb_model(X, y):
+    import xgboost as xgb
+    # Show all messages, including ones pertaining to debugging
+    xgb.set_config(verbosity=2)
     model = xgb.XGBRegressor(objective='reg:squarederror', verbosity=1)
     model.fit(X, y)
     return model
 
+
+def train_sklearn_model(X, y):
+    from sklearn.ensemble import GradientBoostingRegressor
+    from sklearn.model_selection import cross_val_score, RepeatedKFold
+    model = GradientBoostingRegressor()
+    cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+    n_scores = cross_val_score(model, X, y, scoring='neg_mean_absolute_error', cv=cv, n_jobs=-1, error_score='raise')
+    print('MAE: %.3f (%.3f)' % (np.mean(n_scores), np.std(n_scores)))
+    model.fit(X, y)
+
 def model_predict(X, model):
     return model.predict(X)
+
+
+boulderdf = pd.read_csv("boulderdata.csv")
+X, y = preprocess(boulderdf)
+model = train_sklearn_model(X, y)
+print(model.predict(X[0]))
+pickle.dump(model, open("../model.dat", "wb"))
