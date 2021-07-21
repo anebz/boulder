@@ -40,7 +40,7 @@ def get_weather_info(location: str) -> tuple():
         try:
             mgr = pyowm.OWM(os.environ['OWM_API']).weather_manager()
             observation = mgr.weather_at_place(location+',DE').weather
-            temp = observation.temperature('celsius')['temp']
+            temp = round(observation.temperature('celsius')['temp'])
             status = observation.status
             break
         except:
@@ -76,6 +76,10 @@ def lambda_handler(event, context):
     # only update if occupancy in gyms is > 0
     if webdf.empty:
         print("Nothing was scraped, S3 is not updated")
+        return
+
+    # cron job bug, the function is triggered from 7:20 until 23:20 
+    if datetime.datetime.now().strftime("%H:%M") == '23:20':
         return
 
     # download dataset from S3

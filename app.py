@@ -81,5 +81,6 @@ if __name__ == "__main__":
     st_prediction(boulderdf, selected_gym)
     st_avg_data(boulderdf, selected_gym)
 
-    st.markdown("Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎")
-    st.markdown('Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).')
+    st.markdown(f"""
+    Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎\n
+    Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).""")

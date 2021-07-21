@@ -9,9 +9,11 @@ RUN bash -c 'echo -e "\
     enableCORS = false\n\
     " > ~/.streamlit/config.toml'
 
+RUN python -m pip install --upgrade pip
+
 # copy over and install packages
 COPY requirements.txt ./app/requirements.txt
-RUN pip3 install -r app/requirements.txt
+RUN pip install -r app/requirements.txt
 
 # copy workspace over to /app
 COPY . /app
