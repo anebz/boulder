@@ -34,7 +34,7 @@ def st_given_day(boulderdf):
         st.error('There is no data to show for this day. The gym might be closed')
     else:
         st.plotly_chart(plot_data(givendaydf))
-    return selected_gym
+    return selected_gym, selected_date
 
 
 def st_prediction(boulderdf, selected_gym):
@@ -77,8 +77,10 @@ if __name__ == "__main__":
     s3.download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
 
-    selected_gym = st_given_day(boulderdf)
-    st_prediction(boulderdf, selected_gym)
+    selected_gym, selected_date = st_given_day(boulderdf)
+    # only show prediction for current day
+    if str(selected_date) == str(datetime.datetime.today().strftime('%Y-%m-%d')):
+        st_prediction(boulderdf, selected_gym)
     st_avg_data(boulderdf, selected_gym)
 
     st.markdown(f"""
