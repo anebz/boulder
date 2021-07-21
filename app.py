@@ -42,7 +42,7 @@ def st_prediction(boulderdf, selected_gym):
     if not os.path.isfile(modelname):
         s3.download_file(bucketname, modelname, modelname)
     model = pickle.load(open(modelname, "rb"))
-    current_time = datetime.datetime.now()
+    current_time = datetime.datetime.now() + datetime.timedelta(hours=2)
     X_today = preprocess_current_data(boulderdf, gyms, selected_gym, current_time)
     prediction = round(model.predict(X_today)[0])
     # get time for next interval. round to the nearest 20min

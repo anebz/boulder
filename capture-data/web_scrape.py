@@ -79,7 +79,7 @@ def lambda_handler(event, context):
         return
 
     # cron job bug, the function is triggered from 7:20 until 23:20 
-    if datetime.datetime.now().strftime("%H:%M") == '23:20':
+    if datetime.now().strftime("%H:%M") > '23:00':
         return
 
     # download dataset from S3
