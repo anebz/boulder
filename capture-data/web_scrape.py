@@ -78,21 +78,16 @@ def lambda_handler(event, context):
         print("Nothing was scraped, S3 is not updated")
         return
 
-    # cron job bug, the function is triggered from 7:20 until 23:20 
-    if datetime.now().strftime("%H:%M") > '23:00':
-        return
-
     # download dataset from S3
     s3 = boto3.client('s3')
-    dfname = os.environ['CSVNAME']
     dfpath = f"/tmp/{os.environ['CSVNAME']}"
 
     # download dataset from S3
-    s3.download_file(os.environ['BUCKETNAME'], dfname, dfpath)
+    s3.download_file(os.environ['BUCKETNAME'], os.environ['CSVNAME'], dfpath)
 
     # merge boulderdata with tmp file
     webdf.append(pd.read_csv(dfpath)).to_csv(dfpath, index=False)
-    s3.upload_file(dfpath, os.environ['BUCKETNAME'], dfname)
+    s3.upload_file(dfpath, os.environ['BUCKETNAME'], os.environ['CSVNAME'])
 
     print("Scraping done and data updated to S3")
     return

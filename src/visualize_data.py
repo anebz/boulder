@@ -40,6 +40,7 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     # obtain only the data for the specific weekday and gym
     boulderdf = boulderdf[boulderdf['current_time'].str.contains(date)]
     boulderdf = boulderdf[boulderdf['gym_name'] == gym]
+    boulderdf.drop(['gym_name'], axis=1, inplace=True)
 
     # aggregate occupancy and queue
     boulderdf['occupancy'] = boulderdf.apply(lambda r: r.occupancy + r.waiting/10, axis=1)
@@ -47,10 +48,9 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
 
     # transform date to hour and minute format
     boulderdf['current_time'] = boulderdf['current_time'].apply(lambda x: x.split()[1])
-    boulderdf.drop(['gym_name'], axis=1, inplace=True)
 
     # delete entry at 23:20 (cron job bug)
-    boulderdf = boulderdf[~boulderdf['current_time'].str.contains('23:20')]
+    boulderdf = boulderdf[~(boulderdf['current_time'] > '23:00')]
 
     # sort the data by time
     boulderdf.sort_values(by=['current_time'], inplace=True)

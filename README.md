@@ -2,6 +2,16 @@
 
 ![ ](boulder.png)
 
+## How to contribute
+
+If you want to contribute, see the [issues](https://github.com/anebz/boulder/issues) and write a comment saying that you want to work on it. Additionally, if you think of a new issue, feel free to add it :)
+
+## How to add a new gym
+
+If you know a gym that shows the occupancy data, we can add it to the app!
+
+Please fork the repo and make your changes in `capture-data/web_scrape.py`, the scraping script. Include the new gym in the `urls` list and write a function to scrape and process the occupancy data. Then make a pull request, we will review it, make it work in the app and add the gym.
+
 ## Backend Lambda
 
 Set up the [serverless](https://www.serverless.com/framework/docs/getting-started/) directory. This requires AWS credentials.
@@ -25,7 +35,7 @@ serverless invoke -f s3tos3 --log
 pip install -r requirements.txt
 ```
 
-Run [Streamlit](https://streamlit.io/) locally:
+Run [Streamlit](https://streamlit.io/) locally. Set up the AWS profile to access the dataset in AWS:
 
 ```bash
 export AWS_PROFILE=my_profile
