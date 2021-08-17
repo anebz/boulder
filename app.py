@@ -12,7 +12,6 @@ bucketname = 'bboulderdataset'
 dfname = 'boulderdata.csv'
 modelname = 'model.dat'
 s3 = boto3.client('s3')
-s3_buffer = 1 # 1min
 
 def st_given_day(boulderdf):
     # ask user for gym and date input
@@ -22,7 +21,7 @@ def st_given_day(boulderdf):
     You can see the occupancy as a percentage of Corona capacity and the weather in the plot.\n
     If the occupancy is above 100%, that means the Corona capacity has been filled and people are waiting to enter the gym.
     """)
-    selected_gym = st.selectbox('Select gym', gyms.keys())
+    selected_gym = st.radio('Select a gym', gyms.keys())
     today = datetime.date.today()
     # get first available date, the last row in the dataframe
     first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['current_time'], "%Y/%m/%d %H:%M")
@@ -58,7 +57,7 @@ def st_avg_data(boulderdf, selected_gym):
     """)
     today = datetime.date.today()
     weekdays = [(today + datetime.timedelta(days=x)).strftime("%A") for x in range(7)]
-    avg_day = st.selectbox('Select day of the week', weekdays)
+    avg_day = st.radio('Select day of the week', weekdays)
     avgdf = avg_data_day(boulderdf, weekdays.index(avg_day), gyms[selected_gym])
     if avgdf.empty:
         st.error('There is no data to show at all. The gym might be closed for a long time')
@@ -71,8 +70,12 @@ if __name__ == "__main__":
 
     st.set_page_config(
         page_title="Bouldern",
+        #layout="wide",
         page_icon="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/271/person-climbing_1f9d7.png")
     st.title('Boulder gym tracker')
+
+    st.image('https://land8.com/wp-content/uploads/2017/07/Bouldering1.jpg', width=700)
+    st.write("Github repo: [![Star](https://img.shields.io/github/stars/anebz/boulder.svg?logo=github&style=social)](https://gitHub.com/anebz/boulder)")
 
     s3.download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
@@ -85,4 +88,7 @@ if __name__ == "__main__":
 
     st.markdown(f"""
     Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎\n
-    Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).""")
+    Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).\n
+    Follow us! [![@aberasategi](https://img.shields.io/twitter/follow/aberasategi?style=social)](https://www.twitter.com/aberasategi)
+    [![@_AnglinaB](https://img.shields.io/twitter/follow/_AnglinaB?style=social)](https://www.twitter.com/_AnglinaB)""")
+
