@@ -94,4 +94,5 @@ def plot_data(df: pd.DataFrame) -> go.Figure:
         fig.add_trace(go.Scatter(x=df.current_time, y=df.weather_temp, name='Temperature', line=dict(color='green', width=4, dash='dot')))
 
     fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
+    fig.update_layout(width=800)
     return fig
