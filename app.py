@@ -32,7 +32,7 @@ def st_given_day(boulderdf):
     if givendaydf.empty:
         st.error('There is no data to show for this day. The gym might be closed')
     else:
-        st.plotly_chart(plot_data(givendaydf))
+        st.plotly_chart(plot_data(givendaydf), use_container_width=True)
     return selected_gym, selected_date
 
 
@@ -62,7 +62,7 @@ def st_avg_data(boulderdf, selected_gym):
     if avgdf.empty:
         st.error('There is no data to show at all. The gym might be closed for a long time')
     else:
-        st.plotly_chart(plot_data(avgdf))
+        st.plotly_chart(plot_data(avgdf), use_container_width=True)
     return
 
 
