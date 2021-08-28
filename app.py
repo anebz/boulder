@@ -21,7 +21,7 @@ def st_given_day(boulderdf):
     You can see the occupancy as a percentage of Corona capacity and the weather in the plot.\n
     If the occupancy is above 100%, that means the Corona capacity has been filled and people are waiting to enter the gym.
     """)
-    selected_gym = st.radio('Select a gym', gyms.keys())
+    selected_gym = st.radio('Select a gym', list(gyms.keys()))
     today = datetime.date.today()
     # get first available date, the last row in the dataframe
     first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['current_time'], "%Y/%m/%d %H:%M")
