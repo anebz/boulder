@@ -5,6 +5,7 @@ import datetime
 import pandas as pd
 import streamlit as st
 from src.visualize_data import avg_data_day, given_day, preprocess_current_data, plot_data
+import numpy as np
 
 gyms = {'Munich East': 'muenchen-ost', 'Munich West': 'muenchen-west', 'Munich South': 'muenchen-sued', 
         'Dortmund': 'dortmund', 'Frankfurt': 'frankfurt', 'Regensburg': 'regensburg'}
@@ -32,7 +33,9 @@ def st_given_day(boulderdf):
     if givendaydf.empty:
         st.error('There is no data to show for this day. The gym might be closed')
     else:
-        st.plotly_chart(plot_data(givendaydf), width=800)
+        chart_data = givendaydf[['occupancy', 'weather_temp', 'current_time']].rename(columns={'occupancy': 'Occupancy', 'weather_temp': 'Temperature'}).set_index('current_time')
+        st.line_chart(chart_data, use_container_width=True)
+        # st.line_chart(givendaydf.set_index('current_time')['weather_temp'])
     return selected_gym, selected_date
 
 
