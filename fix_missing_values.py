@@ -9,95 +9,59 @@ import pandas as pd
 from scipy.interpolate import interp1d
 
 
-# 
-def get_missing_aquisition_timestamps(df_gym, interval='20min', sample_start='07:20', sample_end='23:40'):
+def get_missing_aquisition_timestamps(df: pd.DataFrame,
+                                      interval:str='20min',
+                                      sample_start:str='07:20',
+                                      sample_end:str='23:40') -> (pd.Series, pd.Series):
     '''
     Get which timestamps are missing for each day. There are two possible cases:
     a) the value was not recorded at the given time
     b) the value was recorded too late
-
-    Parameters
-    ----------
-    df_gym : TYPE
-        DESCRIPTION.
-    interval : TYPE, optional
-        DESCRIPTION. The default is '20min'.
-    sample_start : TYPE, optional
-        DESCRIPTION. The default is '07:20'.
-    sample_end : TYPE, optional
-        DESCRIPTION. The default is '23:40'.
-
-    Returns
-    -------
-    values_not_recorded : TYPE
-        DESCRIPTION.
-    values_recorded_too_late : TYPE
-        DESCRIPTION.
     '''
-    series = pd.Series(data=np.array(df_gym.occupancy), index=df_gym.current_time)
-    series_o = pd.Series(data=np.array(df_gym.occupancy), index=df_gym.current_time)
-    #add a point at the start and end time if it is not starting at the start and end time of the day!
-    series_startpoint = pd.Series(data=[None], index=[df_gym.current_time.min().replace(hour=int(sample_start[:2]),
-                                                                                        minute=int(sample_start[3:]))])
-    series_endpoint = pd.Series(data=[None], index=[df_gym.current_time.max().replace(hour=int(sample_end[:2]),
-                                                                                      minute=int(sample_end[3:]))])
+    series = pd.Series(data=np.array(df.occupancy), index=df.current_time)
+    series_o = pd.Series(data=np.array(df.occupancy), index=df.current_time)
+    # add a point at the start and end time if it is not starting at the start and end time of the day!
+    hour = int(sample_start[:2])
+    minute = int(sample_start[3:])
+    series_startpoint = pd.Series(data=[None], index=[df.current_time.min().replace(hour=hour, minute=minute)])
+    series_endpoint = pd.Series(data=[None], index=[df.current_time.max().replace(hour=hour, minute=minute)])
     try:
         series = series.append(series_endpoint, verify_integrity=True)
         series = series.append(series_startpoint, verify_integrity=True)
     except ValueError:
         pass
-    #resort the series
+    # sort the series
     series = series.sort_index()
-    #upsample it
+    # upsample it
     series_upsampled = series.resample(interval).asfreq()
-    #there are times when there should be no sampling.
-    series_upsampled = series_upsampled.between_time(sample_start, sample_end, include_start=True,  include_end=True)
+    # there are times when there should be no sampling
+    series_upsampled = series_upsampled.between_time(sample_start, sample_end, include_start=True, include_end=True)
     values_not_recorded = series_upsampled[~series_upsampled.index.isin(series_o.index)]
     values_recorded_too_late = series_o[~series_o.index.isin(series_upsampled.index)]
     return values_not_recorded, values_recorded_too_late
 
 
-def number_missing_aquisitions(df_gym, interval='20min', sample_start='07:20', sample_end='23:40'):
+def number_missing_aquisitions(df: pd.DataFrame,
+                               interval:str='20min',
+                               sample_start:str='07:20',
+                               sample_end:str='23:40') -> int:
     '''
     Prints out how many aquisition points where missed and some example times.
-
-    Parameters
-    ----------
-    df : data frame for one gym only!
-    interval : string, in which intervals the sampling occured (using default 20 min)
-        DESCRIPTION. The default is '20min'.
-    sample_start : string - when the webscraping of the boulder sites starts in the morning 
-        DESCRIPTION. The default is '07:20'.
-    sample_end : string - when the webscraping of the boulder sites ends in the evening 
-        DESCRIPTION. The default is '23:40'.
-
-    Returns
-    -------
-    Number of missing elements, an integer
     '''
-    values_not_recorded, values_recorded_too_late = get_missing_aquisition_timestamps(df_gym, interval, sample_start, sample_end)
+    values_not_recorded, values_recorded_too_late = get_missing_aquisition_timestamps(df, interval, sample_start, sample_end)
     print(len(values_not_recorded),' values were not recorded!')
     print(len(values_recorded_too_late),' values were recorded too late!')
     
     return len(values_not_recorded) + len(values_recorded_too_late)
 
-def add_missing_timestamps(df, interval='20min', sample_start='07:20', sample_end='23:40'):
+
+def add_missing_timestamps(df: pd.DataFrame,
+                           interval:str='20min',
+                           sample_start:str='07:20',
+                           sample_end:str='23:40') -> pd.DataFrame:
     '''
     Add missing timestamps (with all other values being NaN)
-    Parameters
-    ----------
-    df : pd.Dataframe of the different bouldering gyms
-        DESCRIPTION.
-    interval : TYPE, optional
-        DESCRIPTION. The default is '20min'.
-    sample_start : TYPE, optional
-        DESCRIPTION. The default is '07:20'.
-    sample_end : TYPE, optional
-        DESCRIPTION. The default is '23:40'.
-
-    Returns
-    -------
-    df_new : the data frame with the missing timestamps for the gyms added 
+    Returns the data frame with the missing timestamps for the gyms added 
     (but all other values being NaN)
     '''
 
@@ -110,21 +74,12 @@ def add_missing_timestamps(df, interval='20min', sample_start='07:20', sample_en
         df = df.append(values_to_append, ignore_index=True)
     return df
 
-def fill_nan_values(df):
+def fill_nan_values(df: pd.DataFrame) -> pd.DataFrame:
     '''
     fill Nan values with an interpolation
-    
     All Nan-values will be filled, those outside of the data will be interpolated.
     Should they be negative for the occupancy or waiting, they will be set to zero.
     The weather status will take the nearest value
-
-    Parameters
-    ----------
-    df : dataframe
-
-    Returns
-    -------
-    df : dataframe 
     '''
     #fill the missing values with a nearest interpolation of the same day!
     for gym in df.gym_name.unique():
@@ -171,58 +126,39 @@ def fill_nan_values(df):
                 else:
                     shift =+ 1
                 df_gym_day_oneNan_shift = df_gym_day_oneNan.shift(shift)
-                df.loc[index,column] = df_gym_day_oneNan_shift.loc[index, column]
+                df.loc[index, column] = df_gym_day_oneNan_shift.loc[index, column]
     return df
 
-def remove_excess_values(df, interval='20min', sample_start='07:20', sample_end='23:40'):
+
+def remove_excess_values(df: pd.DataFrame,
+                         interval:str='20min',
+                         sample_start:str='07:20',
+                         sample_end:str='23:40') -> pd.DataFrame:
     '''
     remove rows which where not measured at the set intervals
-
-    Parameters
-    ----------
-    df : TYPE
-        DESCRIPTION.
-    interval : TYPE, optional
-        DESCRIPTION. The default is '20min'.
-    sample_start : TYPE, optional
-        DESCRIPTION. The default is '07:20'.
-    sample_end : TYPE, optional
-        DESCRIPTION. The default is '23:40'.
-
-    Returns
-    -------
-    df : pd dataFrame
     '''
     for gym in df.gym_name.unique():
         df_gym = df[df.gym_name == gym].sort_values(by='current_time', ascending=True)
         values_not_recorded, values_recorded_too_late = get_missing_aquisition_timestamps(df_gym, interval, sample_start, sample_end)
         #remove the values_recorded_too_late
-        cond1 = (df.current_time.isin(values_recorded_too_late.index))
-        cond2 = (df.gym_name == gym)
-        cond3 = (cond1 & cond2)
-        df = df.drop(df[cond3].index)
+        condition = (df.current_time.isin(values_recorded_too_late.index) & df.gym_name == gym)
+        df = df.drop(df[condition].index)
     return df
 
 
-def correct_bouldering_dataframe(df, interval='20min', sample_start='07:20', sample_end='23:40'):
+def correct_bouldering_dataframe(df: pd.DataFrame,
+                                 interval:str='20min',
+                                 sample_start:str='07:20',
+                                 sample_end:str='23:40') -> pd.DataFrame:
     '''
     Recast boulder dataframe into another time-sampling and interpolate the data
 
     Will interpolate data which has been left out
     will remove data which has been measured too late
-    ----------
-    df : Boulder dataframe
-    interval : TYPE, optional
-        DESCRIPTION. The default is '20min'.
-    sample_start : TYPE, optional, when does measuring start?
-        DESCRIPTION. The default is '07:20'.
-    sample_end : TYPE, optional, when does measuring stop?
-        DESCRIPTION. The default is '23:40'.
-
-    Returns
-    -------
-    pandas dataframe
     '''
 
-    return remove_excess_values(fill_nan_values(add_missing_timestamps(df)), interval, sample_start, sample_end)
+    df = add_missing_timestamps(df)
+    df = fill_nan_values(df)
+    new_df = remove_excess_values(df, interval, sample_start, sample_end)
 
+    return new_df
