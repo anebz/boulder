@@ -42,6 +42,9 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     boulderdf = boulderdf[boulderdf['gym_name'] == gym]
     boulderdf.drop(['gym_name'], axis=1, inplace=True)
 
+    if len(boulderdf) == 0:
+        return boulderdf
+
     # aggregate occupancy and queue
     boulderdf['occupancy'] = boulderdf.apply(lambda r: r.occupancy + r.waiting/10, axis=1)
     boulderdf.drop(['waiting'], axis=1, inplace=True)

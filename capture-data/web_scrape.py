@@ -19,12 +19,15 @@ urls = ['https://www.boulderwelt-muenchen-ost.de/',
 def process_occupancy(url: str) -> tuple():
     # make POST request to admin-ajax.php 
     req = requests.post(f"{url}/wp-admin/admin-ajax.php", data={"action": "cxo_get_crowd_indicator"})
-    if req.status_code == 200:
-        data = json.loads(req.text)
+    if req.status_code != 200:
+        return 0, 0
+    data = json.loads(req.text)
+    # waiting system implemented
+    if 'queue' in data:
         occupancy = data['percent']
         waiting = data['queue']
     else:
-        occupancy = 0
+        occupancy = data['level']
         waiting = 0
     return occupancy, waiting
 
