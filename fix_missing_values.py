@@ -24,9 +24,15 @@ def get_missing_aquisition_timestamps(df: pd.DataFrame,
     hour = int(sample_start[:2])
     minute = int(sample_start[3:])
     series_startpoint = pd.Series(data=[None], index=[df.current_time.min().replace(hour=hour, minute=minute)])
-    series_endpoint = pd.Series(data=[None], index=[df.current_time.max().replace(hour=hour, minute=minute)])
+    hour_end = int(sample_end[:2])
+    minute_end = int(sample_end[3:])
+    series_endpoint = pd.Series(data=[None], index=[df.current_time.max().replace(hour=hour_end,
+                                                                                      minute=minute_end)])
     try:
         series = series.append(series_endpoint, verify_integrity=True)
+    except ValueError:
+        pass
+    try:
         series = series.append(series_startpoint, verify_integrity=True)
     except ValueError:
         pass
@@ -141,7 +147,7 @@ def remove_excess_values(df: pd.DataFrame,
         df_gym = df[df.gym_name == gym].sort_values(by='current_time', ascending=True)
         values_not_recorded, values_recorded_too_late = get_missing_aquisition_timestamps(df_gym, interval, sample_start, sample_end)
         #remove the values_recorded_too_late
-        condition = (df.current_time.isin(values_recorded_too_late.index) & df.gym_name == gym)
+        condition = ((df.current_time.isin(values_recorded_too_late.index)) & (df.gym_name == gym))
         df = df.drop(df[condition].index)
     return df
 
