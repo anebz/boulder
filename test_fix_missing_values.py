@@ -193,7 +193,30 @@ class Testget_missing_aquisition_timestamps(unittest.TestCase):
                              dropped[n].weather_status)
         self.assertEqual(0,
                          df2.isnull().sum().sum())
-  
+
+    def test_weather_status_recovered(self):
+        df = self.get_testset()
+        df.weather_status = 'Rain'
+        location_to_change = random.randint(0, len(df)-1)
+        
+        timing_loc = df.loc[location_to_change].current_time
+        gym_loc = df.loc[location_to_change].gym_name
+        cond_gym = (df.gym_name == gym_loc)
+        cond_time = (df.current_time == timing_loc)
+        
+        iloc_loc = np.where(df[cond_gym].current_time == timing_loc)[0][0]
+       
+        df.loc[location_to_change-1:location_to_change+1,'weather_status'] = 'Clouds'
+
+        drop = df.index[location_to_change]
+        df = df.drop([drop])        
+        df2 = add_missing_timestamps(df,
+                                     interval='20min',
+                                     sample_start='07:20',
+                                     sample_end='23:40')
+        df2 = fill_nan_values(df2)
+
+        self.assertEqual(df2[cond_gym & cond_time].weather_status.iloc[0],'Clouds')
 
 if __name__ == '__main__':
     unittest.main()
