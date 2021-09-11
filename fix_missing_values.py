@@ -128,9 +128,9 @@ def fill_nan_values(df: pd.DataFrame) -> pd.DataFrame:
                 df_gym_day_oneNan = df_gym_day_oneNan.sort_values(by='current_time', ascending=True)
                 #Case 1: it is at the beginning:
                 if df_gym_day_oneNan.iloc[0].isnull().sum() == 1:
-                    shift =- 1
+                    shift = -1
                 else:
-                    shift =+ 1
+                    shift = 1
                 df_gym_day_oneNan_shift = df_gym_day_oneNan.shift(shift)
                 df.loc[index, column] = df_gym_day_oneNan_shift.loc[index, column]
     return df
