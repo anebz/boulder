@@ -168,3 +168,20 @@ def correct_bouldering_dataframe(df: pd.DataFrame,
     new_df = remove_excess_values(df, interval, sample_start, sample_end)
 
     return new_df
+
+def load_boulder_df(filename:str) -> pd.DataFrame:
+    df = pd.read_csv('boulderdata.csv')
+    # convert to datetime
+    form_datetime = '%Y/%m/%d %H:%M'
+    df['current_time'] = pd.to_datetime(df['current_time'],
+                                        format=form_datetime)
+    return df
+
+
+
+
+
+
+
+
+
