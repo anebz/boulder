@@ -65,16 +65,15 @@ def get_occupancy_boulderwelt(url: str) -> tuple():
 
 
 def get_occupancy_magicmountain(url: str) -> tuple():
-    page = requests.get(url)
+    request_url = 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6Ik1hZ2ljTW91bnRhaW4yMDIwMTQifQ.8919GglOcSMn9jl48zZVqNtZzXHh9RX23pN9F6DgX3E&ampel=1'
+    page = requests.get(request_url)
     if page.status_code != 200:
         return 0, 0
     soup = BeautifulSoup(page.content, 'html.parser')
-    page2 = requests.get(soup.find(id='idIframe')['src'])
-    if page2.status_code != 200:
-        return 0, 0
-    
-    soup2 = BeautifulSoup(page2.content, 'html.parser')
-    occupancy = int(soup2.find('div', 'actcounter zoom')['data-value'])
+    try:
+        occupancy = re.search(r'left: (\d*)%', str(soup.find_all("div", class_="pointer-image")[0]['style'])).group(1)
+    except:
+        occupancy = 0
     waiting = 0
     return occupancy, waiting
 
