@@ -115,7 +115,8 @@ def fill_nan_values(df: pd.DataFrame) -> pd.DataFrame:
                     
                     #fill in the interpolated value
                     timestamp_unix = (timestamp-pd.Timestamp("1970-01-01")) // pd.Timedelta('1s')
-                    values = func(timestamp_unix)
+                    values = func([timestamp_unix])
+                    values = np.round(values)
                     if column in ['occupancy', 'waiting']:
                         values[values<0] = 0
                     df.loc[index, column] = values
@@ -156,18 +157,67 @@ def remove_excess_values(df: pd.DataFrame,
 
 
 def correct_bouldering_dataframe(df: pd.DataFrame,
-                                 interval:str='20min',
-                                 sample_start:str='07:20',
-                                 sample_end:str='23:40') -> pd.DataFrame:
+                                 interval: str='20min',
+                                 sample_start: str='07:20',
+                                 sample_end: str='23:40') -> pd.DataFrame:
     '''
     Recast boulder dataframe into another time-sampling and interpolate the data
     It will interpolate data which has been left out and remove data which has been measured too late
     '''
 
-    df['current_time'] = pd.to_datetime(df['current_time'], format='%Y/%m/%d %H:%M')
+    df['current_time'] = pd.to_datetime(df['current_time'], 
+                                        format='%Y/%m/%d %H:%M')
 
     new_df = add_missing_timestamps(df)
     new_df = fill_nan_values(new_df)
     new_df = remove_excess_values(new_df, interval, sample_start, sample_end)
+    # remove nan values if complete days are missing
+    new_df = new_df.dropna()
+    # sort by date.
+    new_df.sort_values(by="current_time", ascending=False, inplace=True)
 
     return new_df
+
+
+if __name__ == "__main__":
+    pd.set_option('display.max_columns', None)
+    df = pd.read_csv("boulderdata.csv")
+    print("before correcting for data")
+    print("shape: ", df.shape)
+    print("nans?", df.isnull().sum())
+    
+    df2 = correct_bouldering_dataframe(df)
+    print("after correcting for missing data")
+    print("shape: ", df2.shape)
+    print("inserted", df2.shape[0]-df.shape[0])
+    print("nans?", df2.isnull().sum())
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
