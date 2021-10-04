@@ -80,7 +80,8 @@ def add_missing_timestamps(df: pd.DataFrame,
     for gym in df.gym_name.unique():
         df_gym = df[df.gym_name == gym].sort_values(by='current_time', ascending=True)
         values_not_recorded, _ = get_missing_timestamps(df_gym, interval, sample_start, sample_end)
-        values_to_append = [{'current_time': time,'gym_name': gym} for time in values_not_recorded.index]
+        max_time = df_gym.current_time.max()
+        values_to_append = [{'current_time': time,'gym_name': gym} for time in values_not_recorded.index if time < max_time]
         df = df.append(values_to_append, ignore_index=True)
     return df
 
@@ -185,12 +186,16 @@ if __name__ == "__main__":
     print("before correcting for data")
     print("shape: ", df.shape)
     print("nans?", df.isnull().sum())
+    print("max time of dataframe",
+          df[df.gym_name == 'dortmund'].current_time.max())
     
     df2 = correct_bouldering_dataframe(df)
     print("after correcting for missing data")
     print("shape: ", df2.shape)
     print("inserted", df2.shape[0]-df.shape[0])
     print("nans?", df2.isnull().sum())
+    print("max time of dataframe",
+          df2[df2.gym_name == 'dortmund'].current_time.max())
     
 
     
