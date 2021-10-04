@@ -87,7 +87,7 @@ if __name__ == "__main__":
     st_avg_data(boulderdf, selected_gym)
 
     st.markdown(f"""
-    Does your gym show how this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎\n
+    Does your gym show this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎\n
     Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).\n
     Follow us! [![@aberasategi](https://img.shields.io/twitter/follow/aberasategi?style=social)](https://www.twitter.com/aberasategi)
     [![@_AnglinaB](https://img.shields.io/twitter/follow/_AnglinaB?style=social)](https://www.twitter.com/_AnglinaB)""")
