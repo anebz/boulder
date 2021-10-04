@@ -23,10 +23,10 @@ def get_missing_timestamps(df: pd.DataFrame,
     series_o = pd.Series(data=np.array(df.occupancy), index=df.current_time)
     # add a point at the start and end time if it is not starting at the start and end time of the day
     try:
-      hour, minute = re.match(r'(\d*):(\d*)', sample_start).groups()
+        hour, minute = re.match(r'(\d*):(\d*)', sample_start).groups()
     except AttributeError:
-      print("Sample start is invalid. Should be this format: 23:30")
-      quit()
+        print("Sample start is invalid. Should be this format: 23:30")
+        quit()
     series_startpoint = pd.Series(data=[None], index=[df.current_time.min().replace(hour=int(hour), minute=int(minute))])         
     try:
         series = series.append(series_startpoint, verify_integrity=True)
@@ -55,33 +55,20 @@ def get_missing_timestamps(df: pd.DataFrame,
     return values_not_recorded, values_recorded_too_late
 
 
-def number_missing_aquisitions(df: pd.DataFrame,
-                               interval:str='20min',
-                               sample_start:str='07:20',
-                               sample_end:str='23:40') -> int:
-    '''
-    Prints out how many aquisition points where missed and some example times.
-    '''
-    values_not_recorded, values_recorded_too_late = get_missing_timestamps(df, interval, sample_start, sample_end)
-    print(f"{len(values_not_recorded)} values were not recorded")
-    print(f"{len(values_recorded_too_late)} values were recorded too late")
-    return len(values_not_recorded) + len(values_recorded_too_late)
-
-
 def add_missing_timestamps(df: pd.DataFrame,
-                           interval:str='20min',
-                           sample_start:str='07:20',
-                           sample_end:str='23:40') -> pd.DataFrame:
+                           interval: str='20min',
+                           sample_start: str='07:20',
+                           sample_end: str='23:40') -> pd.DataFrame:
     '''
     Add missing timestamps (with all other values being NaN)
     Returns the data frame with the missing timestamps for the gyms added (but all other values being NaN)
     '''
-
+    print("\nAdding missing timestamps")
     for gym in df.gym_name.unique():
         df_gym = df[df.gym_name == gym].sort_values(by='current_time', ascending=True)
         values_not_recorded, _ = get_missing_timestamps(df_gym, interval, sample_start, sample_end)
-        max_time = df_gym.current_time.max()
-        values_to_append = [{'current_time': time,'gym_name': gym} for time in values_not_recorded.index if time < max_time]
+        print(f"{gym}: {len(values_not_recorded)} values were not recorded")
+        values_to_append = [{'current_time': time,'gym_name': gym} for time in values_not_recorded.index]
         df = df.append(values_to_append, ignore_index=True)
     return df
 
@@ -93,7 +80,7 @@ def fill_nan_values(df: pd.DataFrame) -> pd.DataFrame:
     Should they be negative for the occupancy or waiting, they will be set to zero.
     The weather status will take the nearest value
     '''
-    #fill the missing values with a nearest interpolation of the same day!
+    # fill the missing values with a nearest interpolation of the same day!
     for gym in df.gym_name.unique():
         df_gym = df[df.gym_name == gym].sort_values(by='current_time', ascending=True)
         #get the timestamps where values are missing
@@ -143,16 +130,17 @@ def fill_nan_values(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def remove_excess_values(df: pd.DataFrame,
-                         interval:str='20min',
-                         sample_start:str='07:20',
-                         sample_end:str='23:40') -> pd.DataFrame:
+                         interval: str='20min',
+                         sample_start: str='07:20',
+                         sample_end: str='23:40') -> pd.DataFrame:
     '''
     remove rows which where not measured at the set intervals
     '''
+    print("\nRemoving timestamps recorded too late")
     for gym in df.gym_name.unique():
         df_gym = df[df.gym_name == gym].sort_values(by='current_time', ascending=True)
         _, values_recorded_too_late = get_missing_timestamps(df_gym, interval, sample_start, sample_end)
-        #remove the values_recorded_too_late
+        print(f"{gym}: {len(values_recorded_too_late)} values were recorded too late")
         df = df.drop(df[(df.gym_name == gym) & (df.current_time.isin(values_recorded_too_late.index))].index)
     return df
 
@@ -165,9 +153,7 @@ def correct_bouldering_dataframe(df: pd.DataFrame,
     Recast boulder dataframe into another time-sampling and interpolate the data
     It will interpolate data which has been left out and remove data which has been measured too late
     '''
-
-    df['current_time'] = pd.to_datetime(df['current_time'], 
-                                        format='%Y/%m/%d %H:%M')
+    df['current_time'] = pd.to_datetime(df['current_time'], format='%Y/%m/%d %H:%M')
 
     new_df = add_missing_timestamps(df)
     new_df = fill_nan_values(new_df)
@@ -176,53 +162,24 @@ def correct_bouldering_dataframe(df: pd.DataFrame,
     new_df = new_df.dropna()
     # sort by date.
     new_df.sort_values(by="current_time", ascending=False, inplace=True)
+    new_df['current_time'] = new_df['current_time'].dt.strftime('%Y/%m/%d %H:%M')
+    new_df.reset_index(drop=True, inplace=True)
 
     return new_df
 
 
 if __name__ == "__main__":
     pd.set_option('display.max_columns', None)
-    df = pd.read_csv("boulderdata.csv")
+    df = pd.read_csv("../boulderdata.csv")
+
     print("before correcting for data")
     print("shape: ", df.shape)
     print("nans?", df.isnull().sum())
-    print("max time of dataframe",
-          df[df.gym_name == 'dortmund'].current_time.max())
-    
+
     df2 = correct_bouldering_dataframe(df)
     print("after correcting for missing data")
     print("shape: ", df2.shape)
     print("inserted", df2.shape[0]-df.shape[0])
     print("nans?", df2.isnull().sum())
-    print("max time of dataframe",
-          df2[df2.gym_name == 'dortmund'].current_time.max())
-    
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    df2.to_csv('../boulderdata_corrected.csv', index=False)
