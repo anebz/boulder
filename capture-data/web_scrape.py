@@ -45,12 +45,7 @@ gyms = {
         'url': 'https://www.magicmountain.de/preise',
         'location': 'Berlin',
         'function': get_occupancy_magicmountain
-    },
-    'Area85': {
-        'url': 'https://www.area-85.de/klettern-berlin',
-        'location': 'Berlin',
-        'function': get_occupancy_area85
-    },
+    }
 }
 
 
@@ -75,19 +70,6 @@ def get_occupancy_magicmountain(url: str) -> tuple():
     except:
         occupancy = 0
     waiting = 0
-    return occupancy, waiting
-
-
-def get_occupancy_area85(url: str) -> tuple():
-    page = requests.get(url)
-    if page.status_code != 200:
-        return 0, 0
-    try:
-        soup = BeautifulSoup(page.content, 'html.parser')
-        occupancy = int(re.search(r'Trafficlight\("(\d+)"', str(soup.find(id='boxzilla-box-5540-content'))).group(1))
-        waiting = 0
-    except TypeError:
-        occupancy, waiting = 0, 0
     return occupancy, waiting
 
 
