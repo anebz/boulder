@@ -10,52 +10,18 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
 
-gyms = {
-    'Munich East': {
-        'url': 'https://www.boulderwelt-muenchen-ost.de',
-        'location': 'Munich',
-        'function': get_occupancy_boulderwelt
-    },
-    'Munich West': {
-        'url': 'https://www.boulderwelt-muenchen-west.de',
-        'location': 'Munich',
-        'function': get_occupancy_boulderwelt
-    },
-    'Munich South': {
-        'url': 'https://www.boulderwelt-muenchen-sued.de',
-        'location': 'Munich',
-        'function': get_occupancy_boulderwelt
-    },
-    'Frankfurt': {
-        'url': 'https://www.boulderwelt-frankfurt.de',
-        'location': 'Frankfurt',
-        'function': get_occupancy_boulderwelt
-    },
-    'Dortmund': {
-        'url': 'https://www.boulderwelt-dortmund.de',
-        'location': 'Dortmund',
-        'function': get_occupancy_boulderwelt
-    },
-    'Regensburg': {
-        'url': 'https://www.boulderwelt-regensburg.de',
-        'location': 'Regensburg',
-        'function': get_occupancy_boulderwelt
-    },
-    'Magicmountain': {
-        'url': 'https://www.magicmountain.de/preise',
-        'location': 'Berlin',
-        'function': get_occupancy_magicmountain
-    }
-}
-
-
 def get_occupancy_boulderwelt(url: str) -> tuple():
     # make POST request to admin-ajax.php 
     req = requests.post(f"{url}/wp-admin/admin-ajax.php", data={"action": "cxo_get_crowd_indicator"})
     if req.status_code != 200:
         return 0, 0
     data = json.loads(req.text)
-    occupancy, waiting = data['percent'], data['queue']
+    # waiting system implemented
+    if 'queue' in data:
+        occupancy, waiting = data['percent'], data['queue']
+    else:
+        occupancy = data['level']
+        waiting = 0
     return occupancy, waiting
 
 
@@ -106,8 +72,47 @@ def scrape_websites() -> pd.DataFrame:
             continue
         webdata.append((current_time, gym_name, occupancy, waiting, weather_temp, weather_status))
   
-    webdf = pd.DataFrame(data=webdata, columns=['current_time', 'gym_name', 'occupancy', 'waiting', 'weather_temp', 'weather_status'])
+    webdf = pd.DataFrame(data=webdata, columns=['time', 'gym_name', 'occupancy', 'waiting', 'weather_temp', 'weather_status'])
     return webdf
+
+
+gyms = {
+    'Munich East': {
+        'url': 'https://www.boulderwelt-muenchen-ost.de',
+        'location': 'Munich',
+        'function': get_occupancy_boulderwelt
+    },
+    'Munich West': {
+        'url': 'https://www.boulderwelt-muenchen-west.de',
+        'location': 'Munich',
+        'function': get_occupancy_boulderwelt
+    },
+    'Munich South': {
+        'url': 'https://www.boulderwelt-muenchen-sued.de',
+        'location': 'Munich',
+        'function': get_occupancy_boulderwelt
+    },
+    'Frankfurt': {
+        'url': 'https://www.boulderwelt-frankfurt.de',
+        'location': 'Frankfurt',
+        'function': get_occupancy_boulderwelt
+    },
+    'Dortmund': {
+        'url': 'https://www.boulderwelt-dortmund.de',
+        'location': 'Dortmund',
+        'function': get_occupancy_boulderwelt
+    },
+    'Regensburg': {
+        'url': 'https://www.boulderwelt-regensburg.de',
+        'location': 'Regensburg',
+        'function': get_occupancy_boulderwelt
+    },
+    'Berlin Magicmountain': {
+        'url': 'https://www.magicmountain.de/preise',
+        'location': 'Berlin',
+        'function': get_occupancy_magicmountain
+    }
+}
 
 
 def lambda_handler(event, context):
