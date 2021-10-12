@@ -11,22 +11,22 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     '''
     
     # obtain only the data for the specific weekday and gym
-    boulderdf['current_time'] = pd.to_datetime(boulderdf['current_time'])
-    boulderdf = boulderdf[boulderdf.current_time.dt.weekday==day]
+    boulderdf['time'] = pd.to_datetime(boulderdf['time'])
+    boulderdf = boulderdf[boulderdf.time.dt.weekday==day]
     boulderdf = boulderdf[boulderdf['gym_name'] == gym]
 
     # aggregate occupancy and queue
     boulderdf['occupancy'] = boulderdf.apply(lambda r: r.occupancy + r.waiting/100, axis=1)
 
     # transform date to hour and minute format
-    boulderdf['current_time'] = boulderdf['current_time'].dt.strftime('%H:%M')
+    boulderdf['time'] = boulderdf['time'].dt.strftime('%H:%M')
 
     # obtain the time and occupancy means
-    avgdf = [[t, round(boulderdf[boulderdf['current_time'] == t]['occupancy'].mean())]\
-            for t in boulderdf['current_time'].unique()]
+    avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['occupancy'].mean())]\
+            for t in boulderdf['time'].unique()]
 
-    avgdf = pd.DataFrame(data=avgdf, columns=['current_time', 'occupancy'])
-    avgdf.sort_values(by=['current_time'], inplace=True)
+    avgdf = pd.DataFrame(data=avgdf, columns=['time', 'occupancy'])
+    avgdf.sort_values(by=['time'], inplace=True)
     return avgdf
 
 
@@ -38,7 +38,7 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     # make conversion from streamlit-type datetime to format in df
     date = date.replace('-', '/')
     # obtain only the data for the specific weekday and gym
-    boulderdf = boulderdf[boulderdf['current_time'].str.contains(date)]
+    boulderdf = boulderdf[boulderdf['time'].str.contains(date)]
     boulderdf = boulderdf[boulderdf['gym_name'] == gym]
     boulderdf.drop(['gym_name'], axis=1, inplace=True)
 
@@ -50,18 +50,18 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     boulderdf.drop(['waiting'], axis=1, inplace=True)
 
     # transform date to hour and minute format
-    boulderdf['current_time'] = boulderdf['current_time'].apply(lambda x: x.split()[1])
+    boulderdf['time'] = boulderdf['time'].apply(lambda x: x.split()[1])
 
     # delete entry at 23:20 (cron job bug)
-    boulderdf = boulderdf[~(boulderdf['current_time'] > '23:00')]
+    boulderdf = boulderdf[~(boulderdf['time'] > '23:00')]
 
     # sort the data by time
-    boulderdf.sort_values(by=['current_time'], inplace=True)
+    boulderdf.sort_values(by=['time'], inplace=True)
 
     return boulderdf
 
 
-def preprocess_current_data(boulderdf: pd.DataFrame, gyms: dict, selected_gym: str, current_time: datetime.date):
+def preprocess_current_data(boulderdf: pd.DataFrame, selected_gym: str, current_time: datetime.date):
 
     with open('onehotlist.txt') as fin:
         onehotlist = fin.read().splitlines()
@@ -76,10 +76,10 @@ def preprocess_current_data(boulderdf: pd.DataFrame, gyms: dict, selected_gym: s
     today_data[onehotlist.index('time')] = next_min
 
     # one-hot selected gym
-    today_data[onehotlist.index(gyms[selected_gym])] = 1
+    today_data[onehotlist.index(selected_gym)] = 1
 
     # obtain latest weather
-    latest_gym_entry = boulderdf.loc[boulderdf['gym_name'] == gyms[selected_gym]].iloc[0]
+    latest_gym_entry = boulderdf.loc[boulderdf['gym_name'] == selected_gym].iloc[0]
     # one-hot weather status
     today_data[onehotlist.index('weather_temp')] = latest_gym_entry['weather_temp']
     today_data[onehotlist.index(latest_gym_entry['weather_status'])] = 1
@@ -92,9 +92,9 @@ def preprocess_current_data(boulderdf: pd.DataFrame, gyms: dict, selected_gym: s
 def plot_data(df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
     # dash options include 'dash', 'dot', and 'dashdot
-    fig.add_trace(go.Scatter(x=df.current_time, y=df.occupancy, name='Occupancy', line=dict(color='firebrick', width=4)))
+    fig.add_trace(go.Scatter(x=df.time, y=df.occupancy, name='Occupancy', line=dict(color='firebrick', width=4)))
     if 'weather_temp' in df:
-        fig.add_trace(go.Scatter(x=df.current_time, y=df.weather_temp, name='Temperature', line=dict(color='green', width=4, dash='dot')))
+        fig.add_trace(go.Scatter(x=df.time, y=df.weather_temp, name='Temperature', line=dict(color='green', width=4, dash='dot')))
 
     fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
     fig.update_layout(width=800)

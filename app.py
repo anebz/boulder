@@ -6,8 +6,6 @@ import pandas as pd
 import streamlit as st
 from src.visualize_data import avg_data_day, given_day, preprocess_current_data, plot_data
 
-gyms = {'Munich East': 'muenchen-ost', 'Munich West': 'muenchen-west', 'Munich South': 'muenchen-sued', 
-        'Dortmund': 'dortmund', 'Frankfurt': 'frankfurt', 'Regensburg': 'regensburg'}
 bucketname = 'bboulderdataset'
 dfname = 'boulderdata.csv'
 modelname = 'model.dat'
@@ -21,14 +19,14 @@ def st_given_day(boulderdf):
     You can see the occupancy as a percentage of Corona capacity and the weather in the plot.\n
     If the occupancy is above 100%, that means the Corona capacity has been filled and people are waiting to enter the gym.
     """)
-    selected_gym = st.radio('Select a gym', gyms.keys())
+    selected_gym = st.radio('Select a gym', sorted(list(boulderdf['gym_name'].unique())))
     today = datetime.date.today()
     # get first available date, the last row in the dataframe
-    first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['current_time'], "%Y/%m/%d %H:%M")
+    first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['time'], "%Y/%m/%d %H:%M")
     selected_date = st.date_input('Selected date', today, min_value=first_date, max_value=today)
 
     # display the data for the given day
-    givendaydf = given_day(boulderdf, str(selected_date), gyms[selected_gym])
+    givendaydf = given_day(boulderdf, str(selected_date), selected_gym)
     if givendaydf.empty:
         st.error('There is no data to show for this day. The gym might be closed')
     else:
@@ -42,7 +40,7 @@ def st_prediction(boulderdf, selected_gym):
         s3.download_file(bucketname, modelname, modelname)
     model = pickle.load(open(modelname, "rb"))
     current_time = datetime.datetime.now() + datetime.timedelta(hours=2)
-    X_today = preprocess_current_data(boulderdf, gyms, selected_gym, current_time)
+    X_today = preprocess_current_data(boulderdf, selected_gym, current_time)
     prediction = round(model.predict(X_today)[0])
     # get time for next interval. round to the nearest 20min
     next_min = (current_time + (datetime.datetime.min - current_time) % datetime.timedelta(minutes=20)).strftime('%H:%M')
@@ -58,7 +56,7 @@ def st_avg_data(boulderdf, selected_gym):
     today = datetime.date.today()
     weekdays = [(today + datetime.timedelta(days=x)).strftime("%A") for x in range(7)]
     avg_day = st.radio('Select day of the week', weekdays)
-    avgdf = avg_data_day(boulderdf, weekdays.index(avg_day), gyms[selected_gym])
+    avgdf = avg_data_day(boulderdf, weekdays.index(avg_day), selected_gym)
     if avgdf.empty:
         st.error('There is no data to show at all. The gym might be closed for a long time')
     else:
@@ -83,7 +81,8 @@ if __name__ == "__main__":
     selected_gym, selected_date = st_given_day(boulderdf)
     # only show prediction for current day
     if str(selected_date) == str(datetime.datetime.today().strftime('%Y-%m-%d')):
-        st_prediction(boulderdf, selected_gym)
+        if selected_gym != 'Berlin Magicmountain':
+            st_prediction(boulderdf, selected_gym)
     st_avg_data(boulderdf, selected_gym)
 
     st.markdown(f"""

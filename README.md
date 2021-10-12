@@ -22,6 +22,12 @@ sls --verbose
 sls plugin install -n serverless-python-requirements
 ```
 
+Before deploying, invoke Lambda function locally:
+
+```bash
+serverless invoke local -f s3tos3
+```
+
 Deploy and invoke the Lambda function.
 
 ```bash

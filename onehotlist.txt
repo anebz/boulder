@@ -1,11 +1,11 @@
 weather_temp
 time
-dortmund
-frankfurt
-muenchen-ost
-muenchen-sued
-muenchen-west
-regensburg
+Dortmund
+Frankfurt
+Munich East
+Munich South
+Munich West
+Regensburg
 Friday
 Monday
 Saturday
