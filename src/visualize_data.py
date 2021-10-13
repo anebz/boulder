@@ -15,6 +15,9 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     boulderdf = boulderdf[boulderdf.time.dt.weekday==day]
     boulderdf = boulderdf[boulderdf['gym_name'] == gym]
 
+    if len(boulderdf) == 0:
+        return boulderdf
+
     # aggregate occupancy and queue
     boulderdf['occupancy'] = boulderdf.apply(lambda r: r.occupancy + r.waiting/100, axis=1)
 
