@@ -1,4 +1,5 @@
 import os
+import pytz
 import boto3
 import pickle
 import datetime
@@ -33,13 +34,35 @@ def st_given_day(boulderdf):
         st.plotly_chart(plot_data(givendaydf), width=800)
     return selected_gym, selected_date
 
+def get_current_time():
+    # https://stackoverflow.com/a/60169568/4569908
+    dt = datetime.datetime.now()
+    timeZone = pytz.timezone("Europe/Berlin")
+    aware_dt = timeZone.localize(dt)
+    if aware_dt.dst() != datetime.timedelta(0,0):
+        #summer time
+        dt += datetime.timedelta(hours=2)
+    else:
+        #winter time
+        dt += datetime.timedelta(hours=1)
+    dt = dt.strftime("%Y/%m/%d %H:%M")
+
+    #round to the nearest 20min interval
+    minutes = [0, 20, 40]
+    current_min = int(dt.split(':')[1])
+    distances = [abs(current_min - _min) for _min in minutes]
+    closest_min = minutes[distances.index(min(distances))]
+    current_time = dt.replace(':'+str(current_min), ':'+str(closest_min))
+
+    return current_time
+
 
 def st_prediction(boulderdf, selected_gym):
     # prediction for future
     if not os.path.isfile(modelname):
         s3.download_file(bucketname, modelname, modelname)
     model = pickle.load(open(modelname, "rb"))
-    current_time = datetime.datetime.now() + datetime.timedelta(hours=2)
+    current_time = get_current_time()
     X_today = preprocess_current_data(boulderdf, selected_gym, current_time)
     prediction = round(model.predict(X_today)[0])
     # get time for next interval. round to the nearest 20min
