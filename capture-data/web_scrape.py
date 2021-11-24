@@ -15,7 +15,16 @@ def get_occupancy_boulderwelt(url: str) -> tuple():
     # make POST request to admin-ajax.php 
     req = requests.post(f"{url}/wp-admin/admin-ajax.php", data={"action": "cxo_get_crowd_indicator"})
     if req.status_code != 200:
-        return 0, 0
+        # admin-ajax.php not working
+        page = requests.get(url)
+        if page.status_code != 200:
+            return 0, 0
+        try:
+            occupancy = round(float(re.search(r'style="margin-left:(.*?)%"', page.text).group(1)))
+            waiting = 0
+            return occupancy, waiting
+        except:
+            return 0, 0
     data = json.loads(req.text)
     # waiting system implemented
     if 'queue' in data:
