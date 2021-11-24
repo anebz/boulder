@@ -53,6 +53,7 @@ def get_current_time():
     distances = [abs(current_min - _min) for _min in minutes]
     closest_min = minutes[distances.index(min(distances))]
     current_time = dt.replace(':'+str(current_min), ':'+str(closest_min))
+    current_time = datetime.datetime.strptime(current_time, "%Y/%m/%d %H:%M")
 
     return current_time
 
