@@ -14,25 +14,34 @@ from bs4 import BeautifulSoup
 def get_occupancy_boulderwelt(url: str) -> tuple():
     # make POST request to admin-ajax.php 
     req = requests.post(f"{url}/wp-admin/admin-ajax.php", data={"action": "cxo_get_crowd_indicator"})
-    if req.status_code != 200:
-        # admin-ajax.php not working
-        page = requests.get(url)
-        if page.status_code != 200:
-            return 0, 0
-        try:
-            occupancy = round(float(re.search(r'style="margin-left:(.*?)%"', page.text).group(1)))
+    if req.status_code == 200:
+        data = json.loads(req.text)
+        if 'percent' in data:
+            occupancy = data['percent']
+        elif 'level' in data:
+            occupancy = data['level']
+        else:
+            print(f"Response doesn't contain percent or level for occupancy. Response is: {req.text}")
+            occupancy = 0
+
+        # waiting system implemented
+        if 'queue' in data:
+            waiting = data['queue']
+        else:
+            print(f"Response doesn't contain queue for waiting data. Response is: {req.text}")
             waiting = 0
-            return occupancy, waiting
-        except:
-            return 0, 0
-    data = json.loads(req.text)
-    # waiting system implemented
-    if 'queue' in data:
-        occupancy, waiting = data['percent'], data['queue']
-    else:
-        occupancy = data['level']
+        return occupancy, waiting
+    
+    # admin-ajax.php not working
+    page = requests.get(url)
+    if page.status_code != 200:
+        return 0, 0
+    try:
+        occupancy = round(float(re.search(r'style="margin-left:(.*?)%"', page.text).group(1)))
         waiting = 0
-    return occupancy, waiting
+        return occupancy, waiting
+    except:
+        return 0, 0
 
 
 def get_occupancy_magicmountain(url: str) -> tuple():
