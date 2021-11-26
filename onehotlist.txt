@@ -19,3 +19,4 @@ Drizzle
 Mist
 Rain
 Thunderstorm
+Snow
