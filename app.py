@@ -60,12 +60,11 @@ def get_current_time():
 
 def st_prediction(boulderdf, selected_gym):
     # prediction for future
-    if not os.path.isfile(modelname):
-        s3.download_file(bucketname, modelname, modelname)
+    s3.download_file(bucketname, modelname, modelname)
     model = pickle.load(open(modelname, "rb"))
     current_time = get_current_time()
     X_today = preprocess_current_data(boulderdf, selected_gym, current_time)
-    prediction = round(model.predict(X_today)[0])
+    prediction = int(model.predict(X_today)[0])
     # get time for next interval. round to the nearest 20min
     next_min = (current_time + (datetime.datetime.min - current_time) % datetime.timedelta(minutes=20)).strftime('%H:%M')
     st.markdown(f'**We predict the occupancy at {next_min} will be: {prediction}**\n')
@@ -105,8 +104,7 @@ if __name__ == "__main__":
     selected_gym, selected_date = st_given_day(boulderdf)
     # only show prediction for current day
     if str(selected_date) == str(datetime.datetime.today().strftime('%Y-%m-%d')):
-        if selected_gym != 'Berlin Magicmountain':
-            st_prediction(boulderdf, selected_gym)
+        st_prediction(boulderdf, selected_gym)
     st_avg_data(boulderdf, selected_gym)
 
     st.markdown(f"""

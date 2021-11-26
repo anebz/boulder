@@ -6,6 +6,7 @@ Munich East
 Munich South
 Munich West
 Regensburg
+Berlin Magicmountain
 Friday
 Monday
 Saturday
