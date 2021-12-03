@@ -12,6 +12,17 @@ dfname = 'boulderdata.csv'
 modelname = 'model.dat'
 s3 = boto3.client('s3')
 
+gyms = {
+    'Berlin Magicmountain': 'https://www.magicmountain.de/preise',
+    'Dortmund Boulderwelt':'https://www.boulderwelt-dortmund.de',
+    'Frankfurt Boulderwelt': 'https://www.boulderwelt-frankfurt.de',
+    'Munich East Boulderwelt': 'https://www.boulderwelt-muenchen-ost.de',
+    'Munich West Boulderwelt': 'https://www.boulderwelt-muenchen-west.de',
+    'Munich South Boulderwelt': 'https://www.boulderwelt-muenchen-sued.de',
+    'Munich Einstein': 'https://muenchen.einstein-boulder.com/',
+    'Regensburg Boulderwelt': 'https://www.boulderwelt-regensburg.de'
+}
+
 def st_given_day(boulderdf):
     # ask user for gym and date input
     st.markdown("""
@@ -20,19 +31,14 @@ def st_given_day(boulderdf):
     You can see the occupancy as a percentage of Corona capacity and the weather in the plot.\n
     If the occupancy is above 100%, that means the Corona capacity has been filled and people are waiting to enter the gym.
     """)
-    list_gyms = []
-    for gym_name in boulderdf['gym_name'].unique():
-        if 'Berlin' not in gym_name:
-            list_gyms.append('Boulderwelt ' + gym_name)
-        else:
-            list_gyms.append(gym_name)
-    list_gyms = sorted(list_gyms)
 
-    selected_gym = st.radio('Select a gym', list_gyms).replace('Boulderwelt ', '')
+    selected_gym = st.radio('Select a gym', sorted(list(boulderdf['gym_name'].unique())))
     today = datetime.date.today()
     # get first available date, the last row in the dataframe
     first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['time'], "%Y/%m/%d %H:%M")
     selected_date = st.date_input('Selected date', today, min_value=first_date, max_value=today)
+
+    st.markdown(f"Showing results for [{selected_gym}]({gyms[selected_gym]})")
 
     # display the data for the given day
     givendaydf = given_day(boulderdf, str(selected_date), selected_gym)
@@ -110,9 +116,11 @@ if __name__ == "__main__":
     boulderdf = pd.read_csv(dfname)
 
     selected_gym, selected_date = st_given_day(boulderdf)
+    '''
     # only show prediction for current day
     if str(selected_date) == str(datetime.datetime.today().strftime('%Y-%m-%d')):
         st_prediction(boulderdf, selected_gym)
+    '''
     st_avg_data(boulderdf, selected_gym)
 
     st.markdown(f"""

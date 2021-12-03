@@ -1,12 +1,13 @@
 weather_temp
 time
-Dortmund
-Frankfurt
-Munich East
-Munich South
-Munich West
-Regensburg
 Berlin Magicmountain
+Dortmund Boulderwelt
+Frankfurt Boulderwelt
+Munich East Boulderwelt
+Munich South Boulderwelt
+Munich West Boulderwelt
+Munich Einstein
+Regensburg Boulderwelt
 Friday
 Monday
 Saturday

@@ -5,6 +5,7 @@ import time
 import pytz
 import boto3
 import pyowm
+import urllib
 import datetime
 import requests
 import pandas as pd
@@ -39,9 +40,28 @@ def get_occupancy_boulderwelt(url: str) -> tuple():
     try:
         occupancy = round(float(re.search(r'style="margin-left:(.*?)%"', page.text).group(1)))
         waiting = 0
-        return occupancy, waiting
     except:
-        return 0, 0
+        occupancy, waiting = 0, 0
+    return occupancy, waiting
+
+
+def get_occupancy_einstein(url: str) -> tuple():
+    with requests.Session() as session:
+        page = session.get(url)
+        if page.status_code != 200:
+            return 0, 0
+        soup = BeautifulSoup(page.content, 'html.parser')
+        try:
+            # to obtain info under #document in html https://stackoverflow.com/a/42953046/4569908
+            frame = soup.select("iframe")[0]
+            frame_url = urllib.parse.urljoin(url, frame["src"])
+            response = session.get(frame_url)
+            frame_soup = BeautifulSoup(response.content, 'html.parser') 
+            occupancy = re.search(r'left: (\d+)%', str(frame_soup)).group(1)
+            waiting = 0
+        except:
+            occupancy, waiting = 0, 0
+    return occupancy, waiting
 
 
 def get_occupancy_magicmountain(url: str) -> tuple():
@@ -57,6 +77,49 @@ def get_occupancy_magicmountain(url: str) -> tuple():
     waiting = 0
     return occupancy, waiting
 
+
+gyms = {
+    'Berlin Magicmountain': {
+        'url': 'https://www.magicmountain.de/preise',
+        'location': 'Berlin',
+        'function': get_occupancy_magicmountain
+    },
+    'Dortmund Boulderwelt': {
+        'url': 'https://www.boulderwelt-dortmund.de',
+        'location': 'Dortmund',
+        'function': get_occupancy_boulderwelt
+    },
+    'Frankfurt Boulderwelt': {
+        'url': 'https://www.boulderwelt-frankfurt.de',
+        'location': 'Frankfurt',
+        'function': get_occupancy_boulderwelt
+    },
+    'Munich East Boulderwelt': {
+        'url': 'https://www.boulderwelt-muenchen-ost.de',
+        'location': 'Munich',
+        'function': get_occupancy_boulderwelt
+    },
+    'Munich West Boulderwelt': {
+        'url': 'https://www.boulderwelt-muenchen-west.de',
+        'location': 'Munich',
+        'function': get_occupancy_boulderwelt
+    },
+    'Munich South Boulderwelt': {
+        'url': 'https://www.boulderwelt-muenchen-sued.de',
+        'location': 'Munich',
+        'function': get_occupancy_boulderwelt
+    },
+    'Munich Einstein': {
+        'url': 'https://muenchen.einstein-boulder.com/',
+        'location': 'Munich',
+        'function': get_occupancy_einstein
+    },
+    'Regensburg Boulderwelt': {
+        'url': 'https://www.boulderwelt-regensburg.de',
+        'location': 'Regensburg',
+        'function': get_occupancy_boulderwelt
+    }
+}
 
 def get_weather_info(location: str) -> tuple():
     '''
@@ -78,7 +141,6 @@ def get_weather_info(location: str) -> tuple():
 
 
 def scrape_websites(current_time: str) -> pd.DataFrame:
-
     webdata = []
     for gym_name, gym_data in gyms.items():
         weather_temp, weather_status = get_weather_info(gym_data['location'])
@@ -91,44 +153,6 @@ def scrape_websites(current_time: str) -> pd.DataFrame:
     webdf = pd.DataFrame(data=webdata, columns=['time', 'gym_name', 'occupancy', 'waiting', 'weather_temp', 'weather_status'])
     return webdf
 
-
-gyms = {
-    'Munich East': {
-        'url': 'https://www.boulderwelt-muenchen-ost.de',
-        'location': 'Munich',
-        'function': get_occupancy_boulderwelt
-    },
-    'Munich West': {
-        'url': 'https://www.boulderwelt-muenchen-west.de',
-        'location': 'Munich',
-        'function': get_occupancy_boulderwelt
-    },
-    'Munich South': {
-        'url': 'https://www.boulderwelt-muenchen-sued.de',
-        'location': 'Munich',
-        'function': get_occupancy_boulderwelt
-    },
-    'Frankfurt': {
-        'url': 'https://www.boulderwelt-frankfurt.de',
-        'location': 'Frankfurt',
-        'function': get_occupancy_boulderwelt
-    },
-    'Dortmund': {
-        'url': 'https://www.boulderwelt-dortmund.de',
-        'location': 'Dortmund',
-        'function': get_occupancy_boulderwelt
-    },
-    'Regensburg': {
-        'url': 'https://www.boulderwelt-regensburg.de',
-        'location': 'Regensburg',
-        'function': get_occupancy_boulderwelt
-    },
-    'Berlin Magicmountain': {
-        'url': 'https://www.magicmountain.de/preise',
-        'location': 'Berlin',
-        'function': get_occupancy_magicmountain
-    }
-}
 
 def get_current_time():
     # https://stackoverflow.com/a/60169568/4569908
