@@ -116,11 +116,9 @@ if __name__ == "__main__":
     boulderdf = pd.read_csv(dfname)
 
     selected_gym, selected_date = st_given_day(boulderdf)
-    '''
     # only show prediction for current day
-    if str(selected_date) == str(datetime.datetime.today().strftime('%Y-%m-%d')):
-        st_prediction(boulderdf, selected_gym)
-    '''
+    #if str(selected_date) == str(datetime.datetime.today().strftime('%Y-%m-%d')):
+    #    st_prediction(boulderdf, selected_gym)
     st_avg_data(boulderdf, selected_gym)
 
     st.markdown(f"""
