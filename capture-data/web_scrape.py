@@ -12,7 +12,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 
-def get_occupancy_boulderwelt(url: str) -> tuple():
+def get_occupancy_boulderwelt(gym_name:str, url: str) -> tuple():
     # make POST request to admin-ajax.php 
     req = requests.post(f"{url}/wp-admin/admin-ajax.php", data={"action": "cxo_get_crowd_indicator"})
     if req.status_code == 200:
@@ -45,7 +45,7 @@ def get_occupancy_boulderwelt(url: str) -> tuple():
     return occupancy, waiting
 
 
-def get_occupancy_einstein(url: str) -> tuple():
+def get_occupancy_einstein(gym_name:str, url: str) -> tuple():
     with requests.Session() as session:
         page = session.get(url)
         if page.status_code != 200:
@@ -64,7 +64,7 @@ def get_occupancy_einstein(url: str) -> tuple():
     return occupancy, waiting
 
 
-def get_occupancy_magicmountain(url: str) -> tuple():
+def get_occupancy_magicmountain(gym_name:str, url: str) -> tuple():
     request_url = 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6Ik1hZ2ljTW91bnRhaW4yMDIwMTQifQ.8919GglOcSMn9jl48zZVqNtZzXHh9RX23pN9F6DgX3E&ampel=1'
     page = requests.get(request_url)
     if page.status_code != 200:
@@ -78,7 +78,38 @@ def get_occupancy_magicmountain(url: str) -> tuple():
     return occupancy, waiting
 
 
+def get_occupancy_dav(gym_name:str, url: str) -> tuple():
+    request_url = 'https://tickboard.de/public/pos_manager/CustomerEntries/getEntriesLeft'
+    page = requests.get(request_url)
+    if page.status_code != 200:
+        return 0, 0
+    results = re.findall(r'<div class="sys-hall-title">(.*?)<\/div>.*?Klettern:.*?(\d*)%.*?Bouldern:.*?(\d*)%', page.text, re.DOTALL)
+    for res in results:
+        name, klettern, bouldern = res
+        if name.replace('KB ', '') in gym_name:
+            if 'klettern' in gym_name:
+                occupancy = int(klettern)
+            elif 'bouldern' in gym_name:
+                occupancy = int(bouldern)
+            break
+    else:
+        occupancy = 0
+    waiting = 0
+    return occupancy, waiting
+
+
+
 gyms = {
+    'Bad Tölz DAV bouldern': {
+        'url': 'https://www.kletterzentrum-badtoelz.de/',
+        'location': 'Bad Tolz',
+        'function': get_occupancy_dav
+    },
+    'Bad Tölz DAV klettern': {
+        'url': 'https://www.kletterzentrum-badtoelz.de/',
+        'location': 'Bad Tolz',
+        'function': get_occupancy_dav
+    },
     'Berlin Magicmountain': {
         'url': 'https://www.magicmountain.de/preise',
         'location': 'Berlin',
@@ -93,6 +124,16 @@ gyms = {
         'url': 'https://www.boulderwelt-frankfurt.de',
         'location': 'Frankfurt',
         'function': get_occupancy_boulderwelt
+    },
+    'Gilching DAV bouldern': {
+        'url': 'https://www.kbgilching.de/',
+        'location': 'Gilching',
+        'function': get_occupancy_dav
+    },
+    'Gilching DAV klettern': {
+        'url': 'https://www.kbgilching.de/',
+        'location': 'Gilching',
+        'function': get_occupancy_dav
     },
     'Munich East Boulderwelt': {
         'url': 'https://www.boulderwelt-muenchen-ost.de',
@@ -113,6 +154,26 @@ gyms = {
         'url': 'https://muenchen.einstein-boulder.com/',
         'location': 'Munich',
         'function': get_occupancy_einstein
+    },
+    'Munich Freimann DAV bouldern': {
+        'url': 'https://www.kbfreimann.de/',
+        'location': 'Munich',
+        'function': get_occupancy_dav
+    },
+    'Munich Freimann DAV klettern': {
+        'url': 'https://www.kbfreimann.de/',
+        'location': 'Munich',
+        'function': get_occupancy_dav
+    },
+    'Munich Thalkirchen DAV bouldern': {
+        'url': 'https://www.kbthalkirchen.de/',
+        'location': 'Munich',
+        'function': get_occupancy_dav
+    },
+    'Munich Thalkirchen DAV klettern': {
+        'url': 'https://www.kbthalkirchen.de/',
+        'location': 'Munich',
+        'function': get_occupancy_dav
     },
     'Regensburg Boulderwelt': {
         'url': 'https://www.boulderwelt-regensburg.de',
@@ -144,7 +205,7 @@ def scrape_websites(current_time: str) -> pd.DataFrame:
     webdata = []
     for gym_name, gym_data in gyms.items():
         weather_temp, weather_status = get_weather_info(gym_data['location'])
-        occupancy, waiting = gym_data['function'](gym_data['url'])
+        occupancy, waiting = gym_data['function'](gym_name, gym_data['url'])
         print(f"{gym_name}: occupancy={occupancy}, waiting={waiting}, temp={weather_temp}, status={weather_status}")
         if occupancy == 0 and waiting == 0:
             continue

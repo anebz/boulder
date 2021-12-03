@@ -13,13 +13,21 @@ modelname = 'model.dat'
 s3 = boto3.client('s3')
 
 gyms = {
+    'Bad Tölz DAV bouldern': 'https://www.kletterzentrum-badtoelz.de',
+    'Bad Tölz DAV klettern': 'https://www.kletterzentrum-badtoelz.de',
     'Berlin Magicmountain': 'https://www.magicmountain.de/preise',
     'Dortmund Boulderwelt':'https://www.boulderwelt-dortmund.de',
     'Frankfurt Boulderwelt': 'https://www.boulderwelt-frankfurt.de',
+    'Gilching DAV bouldern': 'https://www.kbgilching.de',
+    'Gilching DAV klettern': 'https://www.kbgilching.de',
     'Munich East Boulderwelt': 'https://www.boulderwelt-muenchen-ost.de',
     'Munich West Boulderwelt': 'https://www.boulderwelt-muenchen-west.de',
     'Munich South Boulderwelt': 'https://www.boulderwelt-muenchen-sued.de',
-    'Munich Einstein': 'https://muenchen.einstein-boulder.com/',
+    'Munich Einstein': 'https://muenchen.einstein-boulder.com',
+    'Munich Freimann DAV bouldern': 'https://www.kbfreimann.de',
+    'Munich Freimann DAV klettern': 'https://www.kbfreimann.de',
+    'Munich Thalkirchen DAV bouldern': 'https://www.kbthalkirchen.de',
+    'Munich Thalkirchen DAV klettern': 'https://www.kbthalkirchen.de',
     'Regensburg Boulderwelt': 'https://www.boulderwelt-regensburg.de'
 }
 
