@@ -1,7 +1,6 @@
-boto3==1.18.18
-dvc==2.8.3
-numpy==1.18.15
-pandas==0.25.3
-plotly==4.14.3
+boto3
+numpy
+pandas
+plotly
 scikit-learn==0.23.1
 streamlit>=0.79.0
