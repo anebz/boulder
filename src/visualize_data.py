@@ -66,6 +66,8 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
         boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
         boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
         boulderdf.drop('occupancy', axis=1, inplace=True)
+    else:
+        boulderdf['occupancy'] = pd.to_numeric(boulderdf['occupancy'])
 
     # sort the data by time
     boulderdf.sort_values(by=['time'], inplace=True)
