@@ -18,9 +18,6 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     if len(boulderdf) == 0:
         return boulderdf
 
-    # aggregate occupancy and queue
-    boulderdf['occupancy'] = boulderdf.apply(lambda r: r.occupancy + r.waiting/100, axis=1)
-
     # transform date to hour and minute format
     boulderdf['time'] = boulderdf['time'].dt.strftime('%H:%M')
 
@@ -47,10 +44,6 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
 
     if len(boulderdf) == 0:
         return boulderdf
-
-    # aggregate occupancy and queue
-    boulderdf['occupancy'] = boulderdf.apply(lambda r: r.occupancy + r.waiting/10, axis=1)
-    boulderdf.drop(['waiting'], axis=1, inplace=True)
 
     # transform date to hour and minute format
     boulderdf['time'] = boulderdf['time'].apply(lambda x: x.split()[1])

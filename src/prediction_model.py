@@ -18,10 +18,6 @@ def preprocess(df: pd.DataFrame) -> (np.array, np.array):
     df['time'] = df['time'].apply(lambda x: round(x.hour + x.minute/60, 2))
     df.drop('time', axis=1, inplace=True)
 
-    # join occupancy and waiting into a single column
-    df['occupancy'] = df.apply(lambda r: r.occupancy + r.waiting/10, axis=1)
-    df.drop('waiting', axis=1, inplace=True)
-
     # one-hot encode the categorical variables
     df = one_hot_encode_col(df, 'gym_name')
     df = one_hot_encode_col(df, 'weekday')

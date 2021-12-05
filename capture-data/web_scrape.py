@@ -27,22 +27,18 @@ def get_occupancy_boulderwelt(gym_name:str, url: str) -> tuple():
 
         # waiting system implemented
         if 'queue' in data:
-            waiting = data['queue']
-        else:
-            print(f"Response doesn't contain queue for waiting data. Response is: {req.text}")
-            waiting = 0
-        return occupancy, waiting
+            occupancy += int(data['queue']) / 10
+        return occupancy
     
     # admin-ajax.php not working
     page = requests.get(url)
     if page.status_code != 200:
-        return 0, 0
+        return 0
     try:
         occupancy = round(float(re.search(r'style="margin-left:(.*?)%"', page.text).group(1)))
-        waiting = 0
     except:
-        occupancy, waiting = 0, 0
-    return occupancy, waiting
+        occupancy = 0
+    return occupancy
 
 
 def get_occupancy_einstein(gym_name:str, url: str) -> tuple():
@@ -58,31 +54,29 @@ def get_occupancy_einstein(gym_name:str, url: str) -> tuple():
             response = session.get(frame_url)
             frame_soup = BeautifulSoup(response.content, 'html.parser') 
             occupancy = re.search(r'left: (\d+)%', str(frame_soup)).group(1)
-            waiting = 0
         except:
-            occupancy, waiting = 0, 0
-    return occupancy, waiting
+            occupancy = 0
+    return occupancy
 
 
 def get_occupancy_magicmountain(gym_name:str, url: str) -> tuple():
     request_url = 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6Ik1hZ2ljTW91bnRhaW4yMDIwMTQifQ.8919GglOcSMn9jl48zZVqNtZzXHh9RX23pN9F6DgX3E&ampel=1'
     page = requests.get(request_url)
     if page.status_code != 200:
-        return 0, 0
+        return 0
     soup = BeautifulSoup(page.content, 'html.parser')
     try:
         occupancy = re.search(r'left: (\d*)%', str(soup.find_all("div", class_="pointer-image")[0]['style'])).group(1)
     except:
         occupancy = 0
-    waiting = 0
-    return occupancy, waiting
+    return occupancy
 
 
 def get_occupancy_dav(gym_name:str, url: str) -> tuple():
     request_url = 'https://tickboard.de/public/pos_manager/CustomerEntries/getEntriesLeft'
     page = requests.get(request_url)
     if page.status_code != 200:
-        return 0, 0
+        return 0
     results = re.findall(r'<div class="sys-hall-title">(.*?)<\/div>.*?Klettern:.*?(\d*)%.*?Bouldern:.*?(\d*)%', page.text, re.DOTALL)
     for res in results:
         name, klettern, bouldern = res
@@ -94,9 +88,7 @@ def get_occupancy_dav(gym_name:str, url: str) -> tuple():
             break
     else:
         occupancy = 0
-    waiting = 0
-    return occupancy, waiting
-
+    return occupancy
 
 
 gyms = {
@@ -205,13 +197,13 @@ def scrape_websites(current_time: str) -> pd.DataFrame:
     webdata = []
     for gym_name, gym_data in gyms.items():
         weather_temp, weather_status = get_weather_info(gym_data['location'])
-        occupancy, waiting = gym_data['function'](gym_name, gym_data['url'])
-        print(f"{gym_name}: occupancy={occupancy}, waiting={waiting}, temp={weather_temp}, status={weather_status}")
-        if occupancy == 0 and waiting == 0:
+        occupancy = gym_data['function'](gym_name, gym_data['url'])
+        print(f"{gym_name}: occupancy={occupancy}, temp={weather_temp}, status={weather_status}")
+        if occupancy == 0:
             continue
-        webdata.append((current_time, gym_name, occupancy, waiting, weather_temp, weather_status))
+        webdata.append((current_time, gym_name, occupancy, weather_temp, weather_status))
   
-    webdf = pd.DataFrame(data=webdata, columns=['time', 'gym_name', 'occupancy', 'waiting', 'weather_temp', 'weather_status'])
+    webdf = pd.DataFrame(data=webdata, columns=['time', 'gym_name', 'occupancy', 'weather_temp', 'weather_status'])
     return webdf
 
 
