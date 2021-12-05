@@ -21,11 +21,23 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     # transform date to hour and minute format
     boulderdf['time'] = boulderdf['time'].dt.strftime('%H:%M')
 
-    # obtain the time and occupancy means
-    avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['occupancy'].mean())]\
-            for t in boulderdf['time'].unique()]
+    # divide into 2 dfs in DAV gyms
+    if 'DAV' in gym:
+        boulderdf[['bouldern', 'klettern']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
+        boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
+        boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
+        # obtain the time and occupancy means
+        avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['bouldern'].mean()), round(boulderdf[boulderdf['time'] == t]['klettern'].mean())]\
+                for t in boulderdf['time'].unique()]
 
-    avgdf = pd.DataFrame(data=avgdf, columns=['time', 'occupancy'])
+        avgdf = pd.DataFrame(data=avgdf, columns=['time', 'bouldern', 'klettern'])
+    else:
+        # normal case, only one occupancy info
+        # obtain the time and occupancy means
+        avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['occupancy'].mean())]\
+                for t in boulderdf['time'].unique()]
+
+        avgdf = pd.DataFrame(data=avgdf, columns=['time', 'occupancy'])
     avgdf.sort_values(by=['time'], inplace=True)
     return avgdf
 
@@ -48,13 +60,32 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     # transform date to hour and minute format
     boulderdf['time'] = boulderdf['time'].apply(lambda x: x.split()[1])
 
-    # delete entry at 23:20 (cron job bug)
-    boulderdf = boulderdf[~(boulderdf['time'] > '23:00')]
+    # divide occupancy into 2 columns in DAV gyms
+    if 'DAV' in gym:
+        boulderdf[['bouldern', 'klettern']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
+        boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
+        boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
+        boulderdf.drop('occupancy', axis=1, inplace=True)
 
     # sort the data by time
     boulderdf.sort_values(by=['time'], inplace=True)
-
     return boulderdf
+
+
+def plot_data(df: pd.DataFrame) -> go.Figure:
+    fig = go.Figure()
+    # dash options include 'dash', 'dot', and 'dashdot
+    if 'occupancy' in df:
+        fig.add_trace(go.Scatter(x=df.time, y=df.occupancy, name='Occupancy', line=dict(color='firebrick', width=4)))
+    elif 'bouldern' in df and 'klettern' in df:
+        fig.add_trace(go.Scatter(x=df.time, y=df.bouldern, name='Bouldern', line=dict(color='blue', width=4)))
+        fig.add_trace(go.Scatter(x=df.time, y=df.klettern, name='Klettern', line=dict(color='orange', width=4)))
+    if 'weather_temp' in df:
+        fig.add_trace(go.Scatter(x=df.time, y=df.weather_temp, name='Temperature', line=dict(color='green', width=4, dash='dot')))
+
+    fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
+    fig.update_layout(width=800)
+    return fig
 
 
 def preprocess_current_data(boulderdf: pd.DataFrame, selected_gym: str, current_time: datetime.date):
@@ -83,15 +114,3 @@ def preprocess_current_data(boulderdf: pd.DataFrame, selected_gym: str, current_
     # convert to numpy array
     X_today = [np.asarray(today_data)]
     return X_today
-
-
-def plot_data(df: pd.DataFrame) -> go.Figure:
-    fig = go.Figure()
-    # dash options include 'dash', 'dot', and 'dashdot
-    fig.add_trace(go.Scatter(x=df.time, y=df.occupancy, name='Occupancy', line=dict(color='firebrick', width=4)))
-    if 'weather_temp' in df:
-        fig.add_trace(go.Scatter(x=df.time, y=df.weather_temp, name='Temperature', line=dict(color='green', width=4, dash='dot')))
-
-    fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
-    fig.update_layout(width=800)
-    return fig

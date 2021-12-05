@@ -18,9 +18,9 @@ def get_occupancy_boulderwelt(gym_name:str, url: str) -> tuple():
     if req.status_code == 200:
         data = json.loads(req.text)
         if 'percent' in data:
-            occupancy = data['percent']
+            occupancy = int(data['percent'])
         elif 'level' in data:
-            occupancy = data['level']
+            occupancy = int(data['level'])
         else:
             print(f"Response doesn't contain percent or level for occupancy. Response is: {req.text}")
             occupancy = 0
@@ -81,10 +81,7 @@ def get_occupancy_dav(gym_name:str, url: str) -> tuple():
     for res in results:
         name, klettern, bouldern = res
         if name.replace('KB ', '') in gym_name:
-            if 'klettern' in gym_name:
-                occupancy = int(klettern)
-            elif 'bouldern' in gym_name:
-                occupancy = int(bouldern)
+            occupancy = bouldern + '/' + klettern
             break
     else:
         occupancy = 0
@@ -92,12 +89,7 @@ def get_occupancy_dav(gym_name:str, url: str) -> tuple():
 
 
 gyms = {
-    'Bad Tölz DAV bouldern': {
-        'url': 'https://www.kletterzentrum-badtoelz.de/',
-        'location': 'Bad Tolz',
-        'function': get_occupancy_dav
-    },
-    'Bad Tölz DAV klettern': {
+    'Bad Tölz DAV': {
         'url': 'https://www.kletterzentrum-badtoelz.de/',
         'location': 'Bad Tolz',
         'function': get_occupancy_dav
@@ -117,12 +109,7 @@ gyms = {
         'location': 'Frankfurt',
         'function': get_occupancy_boulderwelt
     },
-    'Gilching DAV bouldern': {
-        'url': 'https://www.kbgilching.de/',
-        'location': 'Gilching',
-        'function': get_occupancy_dav
-    },
-    'Gilching DAV klettern': {
+    'Gilching DAV': {
         'url': 'https://www.kbgilching.de/',
         'location': 'Gilching',
         'function': get_occupancy_dav
@@ -147,22 +134,12 @@ gyms = {
         'location': 'Munich',
         'function': get_occupancy_einstein
     },
-    'Munich Freimann DAV bouldern': {
+    'Munich Freimann DAV': {
         'url': 'https://www.kbfreimann.de/',
         'location': 'Munich',
         'function': get_occupancy_dav
     },
-    'Munich Freimann DAV klettern': {
-        'url': 'https://www.kbfreimann.de/',
-        'location': 'Munich',
-        'function': get_occupancy_dav
-    },
-    'Munich Thalkirchen DAV bouldern': {
-        'url': 'https://www.kbthalkirchen.de/',
-        'location': 'Munich',
-        'function': get_occupancy_dav
-    },
-    'Munich Thalkirchen DAV klettern': {
+    'Munich Thalkirchen DAV': {
         'url': 'https://www.kbthalkirchen.de/',
         'location': 'Munich',
         'function': get_occupancy_dav
@@ -184,7 +161,7 @@ def get_weather_info(location: str) -> tuple():
         try:
             mgr = pyowm.OWM(os.environ['OWM_API']).weather_manager()
             observation = mgr.weather_at_place(location).weather
-            temp = round(observation.temperature('celsius')['temp'])
+            temp = int(round(observation.temperature('celsius')['temp']))
             status = observation.status
             break
         except:
@@ -240,7 +217,6 @@ def lambda_handler(event, context):
         return
     
     print(f"Current time: {current_time}")
-
     webdf = scrape_websites(current_time)
 
     # only update if occupancy in gyms is > 0

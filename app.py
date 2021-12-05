@@ -13,21 +13,17 @@ modelname = 'model.dat'
 s3 = boto3.client('s3')
 
 gyms = {
-    'Bad Tölz DAV bouldern': 'https://www.kletterzentrum-badtoelz.de',
-    'Bad Tölz DAV klettern': 'https://www.kletterzentrum-badtoelz.de',
+    'Bad Tölz DAV': 'https://www.kletterzentrum-badtoelz.de',
     'Berlin Magicmountain': 'https://www.magicmountain.de/preise',
     'Dortmund Boulderwelt':'https://www.boulderwelt-dortmund.de',
     'Frankfurt Boulderwelt': 'https://www.boulderwelt-frankfurt.de',
-    'Gilching DAV bouldern': 'https://www.kbgilching.de',
-    'Gilching DAV klettern': 'https://www.kbgilching.de',
+    'Gilching DAV': 'https://www.kbgilching.de',
     'Munich East Boulderwelt': 'https://www.boulderwelt-muenchen-ost.de',
     'Munich West Boulderwelt': 'https://www.boulderwelt-muenchen-west.de',
     'Munich South Boulderwelt': 'https://www.boulderwelt-muenchen-sued.de',
     'Munich Einstein': 'https://muenchen.einstein-boulder.com',
-    'Munich Freimann DAV bouldern': 'https://www.kbfreimann.de',
-    'Munich Freimann DAV klettern': 'https://www.kbfreimann.de',
-    'Munich Thalkirchen DAV bouldern': 'https://www.kbthalkirchen.de',
-    'Munich Thalkirchen DAV klettern': 'https://www.kbthalkirchen.de',
+    'Munich Freimann DAV': 'https://www.kbfreimann.de',
+    'Munich Thalkirchen DAV': 'https://www.kbthalkirchen.de',
     'Regensburg Boulderwelt': 'https://www.boulderwelt-regensburg.de'
 }
 
@@ -120,8 +116,9 @@ if __name__ == "__main__":
     st.image('https://land8.com/wp-content/uploads/2017/07/Bouldering1.jpg', width=700)
     st.write("Github repo: [![Star](https://img.shields.io/github/stars/anebz/boulder.svg?logo=github&style=social)](https://gitHub.com/anebz/boulder)")
 
-    s3.download_file(bucketname, dfname, dfname)
+    #s3.download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
+    #boulderdf = pd.read_csv('sample.csv')
 
     selected_gym, selected_date = st_given_day(boulderdf)
     # only show prediction for current day
