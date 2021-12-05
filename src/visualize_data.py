@@ -34,6 +34,7 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     else:
         # normal case, only one occupancy info
         # obtain the time and occupancy means
+        boulderdf['occupancy'] = pd.to_numeric(boulderdf['occupancy'])
         avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['occupancy'].mean())]\
                 for t in boulderdf['time'].unique()]
 
