@@ -26,7 +26,7 @@ def get_occupancy_boulderwelt(gym_name:str, url: str) -> tuple():
             occupancy = 0
 
         # waiting system implemented
-        if 'queue' in data:
+        if 'queue' in data and int(data['queue']) > 0:
             occupancy += int(data['queue']) / 10
         return occupancy
     
@@ -35,7 +35,7 @@ def get_occupancy_boulderwelt(gym_name:str, url: str) -> tuple():
     if page.status_code != 200:
         return 0
     try:
-        occupancy = round(float(re.search(r'style="margin-left:(.*?)%"', page.text).group(1)))
+        occupancy = int(float(re.search(r'style="margin-left:(.*?)%"', page.text).group(1)))
     except:
         occupancy = 0
     return occupancy
@@ -88,6 +88,57 @@ def get_occupancy_dav(gym_name:str, url: str) -> tuple():
     return occupancy
 
 
+def get_occupancy_dav_regensburg(gym_name:str, url: str) -> tuple():
+    # found the request in the website's developer tools. this returns a long string. use regex
+    request_url = 'https://126.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=THbq9w2DkUhmaKv7nvrXraeFQ8BSYf6C'
+    page = requests.get(request_url)
+    if page.status_code != 200:
+        return 0
+    try:
+        occupancy = int(re.findall(r'width: (.*)%', page.text)[0])
+    except:
+        occupancy = 0
+    return occupancy
+
+
+def get_occupancy_braunschweig(gym_name:str, url: str) -> tuple():
+    # found the request in the website's developer tools. this returns a long string. use regex
+    # innen
+    request_url_1 = 'https://158.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=yspPh6Mr2KdST3br8WC7X8p6BdETgmPn&hid=158&container=trafficlightContainer_1&type=2&area=1'
+    # draußen
+    request_url_2 = 'https://158.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=yspPh6Mr2KdST3br8WC7X8p6BdETgmPn&hid=158&container=trafficlightContainer_2&type=2&area=2'
+    page = requests.get(request_url_1)
+    if page.status_code != 200:
+        return 0
+    try:
+        occupancy_1 = re.findall(r'width: (.*)%', page.text)[0]
+    except:
+        occupancy_1 = 0
+
+    page = requests.get(request_url_2)
+    if page.status_code != 200:
+        return 0
+    try:
+        occupancy_2 = re.findall(r'width: (.*)%', page.text)[0]
+    except:
+        occupancy_2 = 0
+    occupancy = occupancy_1 + '/' + occupancy_2
+    return occupancy
+
+
+def get_occupancy_heavens(gym_name:str, url: str) -> tuple():
+    # found the request in the website's developer tools. this returns a long string. use regex
+    request_url = 'https://210.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=b8cab21X5BEfm2g8zr32eX1kgfwg1EQx'
+    page = requests.get(request_url)
+    if page.status_code != 200:
+        return 0
+    try:
+        occupancy = int(re.findall(r'width: (.*)%', page.text)[0])
+    except:
+        occupancy = 0
+    return occupancy
+
+
 gyms = {
     'Bad Tölz DAV': {
         'url': 'https://www.kletterzentrum-badtoelz.de/',
@@ -98,6 +149,11 @@ gyms = {
         'url': 'https://www.magicmountain.de/preise',
         'location': 'Berlin',
         'function': get_occupancy_magicmountain
+    },
+    'Braunschweig Fliegerhalle': {
+        'url': 'https://www.fliegerhalle-bs.de/',
+        'location': 'Braunschweig',
+        'function': get_occupancy_braunschweig
     },
     'Dortmund Boulderwelt': {
         'url': 'https://www.boulderwelt-dortmund.de',
@@ -144,10 +200,20 @@ gyms = {
         'location': 'Munich',
         'function': get_occupancy_dav
     },
+    'Munich Heavens Gate': {
+        'url': 'https://www.heavensgate-muc.de/',
+        'location': 'Munich',
+        'function': get_occupancy_heavens
+    },
     'Regensburg Boulderwelt': {
         'url': 'https://www.boulderwelt-regensburg.de',
         'location': 'Regensburg',
         'function': get_occupancy_boulderwelt
+    },
+    'Regensburg DAV': {
+        'url': 'https://www.kletterzentrum-regensburg.de/',
+        'location': 'Regensburg',
+        'function': get_occupancy_dav_regensburg
     }
 }
 

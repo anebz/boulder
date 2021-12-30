@@ -62,10 +62,15 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     boulderdf['time'] = boulderdf['time'].apply(lambda x: x.split()[1])
 
     # divide occupancy into 2 columns in DAV gyms
-    if 'DAV' in gym:
+    if 'DAV' in gym and 'Regensburg' not in gym:
         boulderdf[['bouldern', 'klettern']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
         boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
         boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
+        boulderdf.drop('occupancy', axis=1, inplace=True)
+    elif 'Braunschweig' in gym:
+        boulderdf[['innen', 'außen']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
+        boulderdf['innen'] = pd.to_numeric(boulderdf['innen'])
+        boulderdf['außen'] = pd.to_numeric(boulderdf['außen'])
         boulderdf.drop('occupancy', axis=1, inplace=True)
     else:
         boulderdf['occupancy'] = pd.to_numeric(boulderdf['occupancy'])
@@ -83,6 +88,9 @@ def plot_data(df: pd.DataFrame) -> go.Figure:
     elif 'bouldern' in df and 'klettern' in df:
         fig.add_trace(go.Scatter(x=df.time, y=df.bouldern, name='Bouldern', line=dict(color='blue', width=4)))
         fig.add_trace(go.Scatter(x=df.time, y=df.klettern, name='Klettern', line=dict(color='orange', width=4)))
+    elif 'innen' in df and 'außen' in df:
+        fig.add_trace(go.Scatter(x=df.time, y=df.innen, name='Innen', line=dict(color='blue', width=4)))
+        fig.add_trace(go.Scatter(x=df.time, y=df.außen, name='Außen', line=dict(color='orange', width=4)))
     if 'weather_temp' in df:
         fig.add_trace(go.Scatter(x=df.time, y=df.weather_temp, name='Temperature', line=dict(color='green', width=4, dash='dot')))
 

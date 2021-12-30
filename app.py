@@ -15,6 +15,7 @@ s3 = boto3.client('s3')
 gyms = {
     'Bad Tölz DAV': 'https://www.kletterzentrum-badtoelz.de',
     'Berlin Magicmountain': 'https://www.magicmountain.de/preise',
+    'Braunschweig Fliegerhalle': 'https://www.fliegerhalle-bs.de',
     'Dortmund Boulderwelt':'https://www.boulderwelt-dortmund.de',
     'Frankfurt Boulderwelt': 'https://www.boulderwelt-frankfurt.de',
     'Gilching DAV': 'https://www.kbgilching.de',
@@ -24,7 +25,9 @@ gyms = {
     'Munich Einstein': 'https://muenchen.einstein-boulder.com',
     'Munich Freimann DAV': 'https://www.kbfreimann.de',
     'Munich Thalkirchen DAV': 'https://www.kbthalkirchen.de',
-    'Regensburg Boulderwelt': 'https://www.boulderwelt-regensburg.de'
+    'Munich Heavens Gate': 'https://www.heavensgate-muc.de/',
+    'Regensburg Boulderwelt': 'https://www.boulderwelt-regensburg.de',
+    'Regensburg DAV': 'https://www.kletterzentrum-regensburg.de'
 }
 
 def st_given_day(boulderdf):
