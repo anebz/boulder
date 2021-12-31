@@ -2,6 +2,18 @@
 
 ![ ](boulder.png)
 
+## Enable virtual environment
+
+[Pyenv](https://github.com/pyenv/pyenv-virtualenv)
+
+```bash
+# List virtual environments
+pyenv virtualenvs
+# activate virtualenv
+pyenv activate boulderenv
+pyenv deactivate
+```
+
 ## How to contribute
 
 If you want to contribute, see the [issues](https://github.com/anebz/boulder/issues) and write a comment saying that you want to work on it. Additionally, if you think of a new issue, feel free to add it :)
@@ -11,6 +23,12 @@ If you want to contribute, see the [issues](https://github.com/anebz/boulder/iss
 If you know a gym that shows the occupancy data, we can add it to the app!
 
 Please fork the repo and make your changes in `capture-data/web_scrape.py`, the scraping script. Include the new gym in the `urls` list and write a function to scrape and process the occupancy data. Then make a pull request, we will review it, make it work in the app and add the gym.
+
+## Analytics
+
+* [streamlit-analytics](https://github.com/jrieke/streamlit-analytics)
+* [Firestore integration](https://blog.streamlit.io/streamlit-firestore)
+* [Firestore db](https://console.firebase.google.com/project/boulder-analytics/firestore/data)
 
 ## Backend Lambda
 
@@ -86,5 +104,3 @@ Legal info about scraping/crawling
 1. [Web Scraping and Crawling Are Perfectly Legal, Right?](https://benbernardblog.com/web-scraping-and-crawling-are-perfectly-legal-right/)
 2. [robots.txt file](https://www.boulderwelt-muenchen-ost.de/robots.txt) doesn't prohibit scraping the main webpage
 3. No prohibitions in AGB or Datenschutzerklärung. No Nutzunsbedingungen
-
-Estimation of circa 300 people for 59% of whole capacity (corona capacity).

@@ -5,6 +5,7 @@ import pickle
 import datetime
 import pandas as pd
 import streamlit as st
+import streamlit_analytics
 from src.visualize_data import avg_data_day, given_day, preprocess_current_data, plot_data
 
 bucketname = 'bboulderdataset'
@@ -175,11 +176,15 @@ if __name__ == "__main__":
     st.title('Boulder gym tracker')
     st.markdown('**Update 30.12.2021: currently supporting 15 gyms!** 🚀')
     st.write("Github repo: [![Star](https://img.shields.io/github/stars/anebz/boulder.svg?logo=github&style=social)](https://gitHub.com/anebz/boulder)")
-
     st.image('https://land8.com/wp-content/uploads/2017/07/Bouldering1.jpg', width=700)
 
     # plot map with gym coordinates
     st.map(pd.DataFrame([[gyms[gym_name]['lat'], gyms[gym_name]['long']] for gym_name in gyms], columns=['lat', 'lon']))
+
+    # set up analytics
+    if not os.path.isfile('firestore-key.json'):
+        s3.download_file(bucketname, 'firestore-key.json', 'firestore-key.json')
+    streamlit_analytics.start_tracking(firestore_key_file="firestore-key.json", firestore_collection_name="counts")
 
     s3.download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
@@ -195,3 +200,4 @@ if __name__ == "__main__":
     Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).\n
     Follow us! [![@anebzt](https://img.shields.io/twitter/follow/anebzt?style=social)](https://www.twitter.com/anebzt)
     [![@_AnglinaB](https://img.shields.io/twitter/follow/_AnglinaB?style=social)](https://www.twitter.com/_AnglinaB)""")
+    streamlit_analytics.stop_tracking(firestore_key_file="firestore-key.json", firestore_collection_name="counts")
