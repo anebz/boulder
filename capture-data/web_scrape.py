@@ -219,7 +219,7 @@ gyms = {
 
 def get_weather_info(location: str) -> tuple():
     '''
-    Get weather temperature and status for a specific location in Germany
+    Get weather temperature and status for a specific location
     '''
     temp = 0
     status = ''

@@ -13,30 +13,88 @@ modelname = 'model.dat'
 s3 = boto3.client('s3')
 
 gyms = {
-    'Bad Tölz DAV': 'https://www.kletterzentrum-badtoelz.de',
-    'Berlin Magicmountain': 'https://www.magicmountain.de/preise',
-    'Braunschweig Fliegerhalle': 'https://www.fliegerhalle-bs.de',
-    'Dortmund Boulderwelt':'https://www.boulderwelt-dortmund.de',
-    'Frankfurt Boulderwelt': 'https://www.boulderwelt-frankfurt.de',
-    'Gilching DAV': 'https://www.kbgilching.de',
-    'Munich East Boulderwelt': 'https://www.boulderwelt-muenchen-ost.de',
-    'Munich West Boulderwelt': 'https://www.boulderwelt-muenchen-west.de',
-    'Munich South Boulderwelt': 'https://www.boulderwelt-muenchen-sued.de',
-    'Munich Einstein': 'https://muenchen.einstein-boulder.com',
-    'Munich Freimann DAV': 'https://www.kbfreimann.de',
-    'Munich Thalkirchen DAV': 'https://www.kbthalkirchen.de',
-    'Munich Heavens Gate': 'https://www.heavensgate-muc.de/',
-    'Regensburg Boulderwelt': 'https://www.boulderwelt-regensburg.de',
-    'Regensburg DAV': 'https://www.kletterzentrum-regensburg.de'
+    'Bad Tölz DAV': {
+        'url': 'https://www.kletterzentrum-badtoelz.de',
+        'lat': 47.7593381,
+        'long': 11.5767634
+    },
+    'Berlin Magicmountain': {
+        'url': 'https://www.magicmountain.de/preise',
+        'lat': 52.5487662,
+        'long': 13.3793593
+    },
+    'Braunschweig Fliegerhalle': {
+        'url': 'https://www.fliegerhalle-bs.de',
+        'lat': 52.2504313,
+        'long': 10.5039853
+    },
+    'Dortmund Boulderwelt': {
+        'url': 'https://www.boulderwelt-dortmund.de',
+        'lat': 51.4945889,
+        'long': 7.3755849
+    },
+    'Frankfurt Boulderwelt': {
+        'url': 'https://www.boulderwelt-frankfurt.de',
+        'lat': 50.1639988,
+        'long': 8.6827019
+    },
+    'Gilching DAV': {
+        'url': 'https://www.kbgilching.de',
+        'lat': 48.1012676,
+        'long': 11.2989043
+    },
+    'Munich East Boulderwelt': {
+        'url': 'https://www.boulderwelt-muenchen-ost.de',
+        'lat': 48.1258625,
+        'long': 11.6088936
+    },
+    'Munich West Boulderwelt': {
+        'url': 'https://www.boulderwelt-muenchen-west.de',
+        'lat': 48.1363848,
+        'long': 11.4182376
+    },
+    'Munich South Boulderwelt': {
+        'url': 'https://www.boulderwelt-muenchen-sued.de',
+        'lat': 48.0406477,
+        'long': 11.5936232
+    },
+    'Munich Einstein': {
+        'url': 'https://muenchen.einstein-boulder.com',
+        'lat': 48.1405753,
+        'long': 11.5206076
+    },
+    'Munich Freimann DAV': {
+        'url': 'https://www.kbfreimann.de',
+        'lat': 48.2067671,
+        'long': 11.6157703
+    },
+    'Munich Thalkirchen DAV': {
+        'url': 'https://www.kbthalkirchen.de',
+        'lat': 48.1020222,
+        'long': 11.5431923
+    },
+    'Munich Heavens Gate': {
+        'url': 'https://www.heavensgate-muc.de/',
+        'lat': 48.1240871,
+        'long': 11.6045269 
+    },
+    'Regensburg Boulderwelt': {
+        'url': 'https://www.boulderwelt-regensburg.de',
+        'lat': 49.032152,
+        'long': 12.1266388
+    },
+    'Regensburg DAV': {
+        'url': 'https://www.kletterzentrum-regensburg.de',
+        'lat': 49.042709,
+        'long': 12.0838051
+    }
 }
 
 def st_given_day(boulderdf):
     # ask user for gym and date input
     st.markdown("""
     ## How full is my gym today?\n
-    Due to Corona, gyms have reduced their capacity. Once the Corona capacity is reached, people have to wait to enter the gym.\n
-    You can see the occupancy as a percentage of Corona capacity and the weather in the plot.\n
-    If the occupancy is above 100%, that means the Corona capacity has been filled and people are waiting to enter the gym.
+    Due to Corona, gyms have reduced their capacity. If the occupancy is above 100%, that means people are waiting to enter the gym.
     """)
 
     selected_gym = st.radio('Select a gym', sorted(list(boulderdf['gym_name'].unique())))
@@ -45,7 +103,7 @@ def st_given_day(boulderdf):
     first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['time'], "%Y/%m/%d %H:%M")
     selected_date = st.date_input('Selected date', today, min_value=first_date, max_value=today)
 
-    st.markdown(f"Showing results for [{selected_gym}]({gyms[selected_gym]})")
+    st.markdown(f"Showing results for [{selected_gym}]({gyms[selected_gym]['url']})")
 
     # display the data for the given day
     givendaydf = given_day(boulderdf, str(selected_date), selected_gym)
@@ -115,9 +173,13 @@ if __name__ == "__main__":
         #layout="wide",
         page_icon="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/271/person-climbing_1f9d7.png")
     st.title('Boulder gym tracker')
+    st.markdown('**Update 30.12.2021: currently supporting 15 gyms!** 🚀')
+    st.write("Github repo: [![Star](https://img.shields.io/github/stars/anebz/boulder.svg?logo=github&style=social)](https://gitHub.com/anebz/boulder)")
 
     st.image('https://land8.com/wp-content/uploads/2017/07/Bouldering1.jpg', width=700)
-    st.write("Github repo: [![Star](https://img.shields.io/github/stars/anebz/boulder.svg?logo=github&style=social)](https://gitHub.com/anebz/boulder)")
+
+    # plot map with gym coordinates
+    st.map(pd.DataFrame([[gyms[gym_name]['lat'], gyms[gym_name]['long']] for gym_name in gyms], columns=['lat', 'lon']))
 
     s3.download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
@@ -131,6 +193,5 @@ if __name__ == "__main__":
     st.markdown(f"""
     Does your gym show this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎\n
     Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).\n
-    Follow us! [![@aberasategi](https://img.shields.io/twitter/follow/aberasategi?style=social)](https://www.twitter.com/aberasategi)
+    Follow us! [![@anebzt](https://img.shields.io/twitter/follow/anebzt?style=social)](https://www.twitter.com/anebzt)
     [![@_AnglinaB](https://img.shields.io/twitter/follow/_AnglinaB?style=social)](https://www.twitter.com/_AnglinaB)""")
-
