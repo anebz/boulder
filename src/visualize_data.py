@@ -1,8 +1,7 @@
 import datetime
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
-
+import altair as alt
 
 def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     '''
@@ -54,6 +53,8 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     boulderdf = boulderdf[boulderdf['time'].str.contains(date)]
     boulderdf = boulderdf[boulderdf['gym_name'] == gym]
     boulderdf.drop(['gym_name'], axis=1, inplace=True)
+    boulderdf.drop(['weather_status'], axis=1, inplace=True)
+    boulderdf.drop(['weather_temp'], axis=1, inplace=True)
 
     if len(boulderdf) == 0:
         return boulderdf
@@ -80,23 +81,15 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     return boulderdf
 
 
-def plot_data(df: pd.DataFrame) -> go.Figure:
-    fig = go.Figure()
-    # dash options include 'dash', 'dot', and 'dashdot
-    if 'occupancy' in df:
-        fig.add_trace(go.Scatter(x=df.time, y=df.occupancy, name='Occupancy', line=dict(color='firebrick', width=4)))
-    elif 'bouldern' in df and 'klettern' in df:
-        fig.add_trace(go.Scatter(x=df.time, y=df.bouldern, name='Bouldern', line=dict(color='blue', width=4)))
-        fig.add_trace(go.Scatter(x=df.time, y=df.klettern, name='Klettern', line=dict(color='orange', width=4)))
-    elif 'innen' in df and 'außen' in df:
-        fig.add_trace(go.Scatter(x=df.time, y=df.innen, name='Innen', line=dict(color='blue', width=4)))
-        fig.add_trace(go.Scatter(x=df.time, y=df.außen, name='Außen', line=dict(color='orange', width=4)))
-    if 'weather_temp' in df:
-        fig.add_trace(go.Scatter(x=df.time, y=df.weather_temp, name='Temperature', line=dict(color='green', width=4, dash='dot')))
-
-    fig['layout']['yaxis'].update(title='', range=[-5, 105], autorange=False)
-    fig.update_layout(width=800)
-    return fig
+def plot_data(df: pd.DataFrame):
+    # to plot several graphs in the y axis, melt the df
+    df = df.melt('time', var_name='name', value_name='occupancy')
+    chart = alt.Chart(df).mark_line(interpolate='basis').encode(
+        x=alt.X('time:N', axis=alt.Axis(grid=True)),
+        y=alt.Y('occupancy:Q', scale=alt.Scale(domain=[0, 100])),
+        color=alt.Color("name:N")
+    )
+    return chart
 
 
 def preprocess_current_data(boulderdf: pd.DataFrame, selected_gym: str, current_time: datetime.date):

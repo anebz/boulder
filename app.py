@@ -104,14 +104,14 @@ def st_given_day(boulderdf):
     first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['time'], "%Y/%m/%d %H:%M")
     selected_date = st.date_input('Selected date', today, min_value=first_date, max_value=today)
 
-    st.markdown(f"Showing results for [{selected_gym}]({gyms[selected_gym]['url']})")
+    st.markdown(f"### Showing results for [{selected_gym}]({gyms[selected_gym]['url']})\nOccupancy shown in percentage")
 
     # display the data for the given day
     givendaydf = given_day(boulderdf, str(selected_date), selected_gym)
     if givendaydf.empty:
         st.error('There is no data to show for this day. The gym might be closed')
     else:
-        st.plotly_chart(plot_data(givendaydf), width=800)
+        st.altair_chart(plot_data(givendaydf), use_container_width=True)
     return selected_gym, selected_date
 
 def get_current_time():
@@ -163,7 +163,7 @@ def st_avg_data(boulderdf, selected_gym):
     if avgdf.empty:
         st.error('There is no data to show at all. The gym might be closed for a long time')
     else:
-        st.plotly_chart(plot_data(avgdf), width=800)
+        st.altair_chart(plot_data(avgdf), use_container_width=True)
     return
 
 
