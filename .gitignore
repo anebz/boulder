@@ -130,9 +130,10 @@ dmypy.json
 
 # other
 .vscode/
-*.json
 *.csv
 *.model
 .DS_Store
 .serverless/
 node_modules/
+capture-data/*.json
+firestore-key.json

@@ -1,0 +1,107 @@
+{
+    "Bad Tölz DAV": {
+        "url": "https://www.kletterzentrum-badtoelz.de",
+        "location": "Bad Tolz",
+        "function": "get_occupancy_dav",
+        "lat": 47.7593381,
+        "long": 11.5767634
+    },
+    "Berlin Magicmountain": {
+        "url": "https://www.magicmountain.de/preise",
+        "location": "Berlin",
+        "function": "get_occupancy_magicmountain",
+        "lat": 52.5487662,
+        "long": 13.3793593
+    },
+    "Braunschweig Fliegerhalle": {
+        "url": "https://www.fliegerhalle-bs.de",
+        "location": "Braunschweig",
+        "function": "get_occupancy_braunschweig",
+        "lat": 52.2504313,
+        "long": 10.5039853
+    },
+    "Dortmund Boulderwelt": {
+        "url": "https://www.boulderwelt-dortmund.de",
+        "location": "Dortmund",
+        "function": "get_occupancy_boulderwelt",
+        "lat": 51.4945889,
+        "long": 7.3755849
+    },
+    "Frankfurt Boulderwelt": {
+        "url": "https://www.boulderwelt-frankfurt.de",
+        "location": "Frankfurt",
+        "function": "get_occupancy_boulderwelt",
+        "lat": 50.1639988,
+        "long": 8.6827019
+    },
+    "Gilching DAV": {
+        "url": "https://www.kbgilching.de",
+        "location": "Gilching",
+        "function": "get_occupancy_dav",
+        "lat": 48.1012676,
+        "long": 11.2989043
+    },
+    "Munich East Boulderwelt": {
+        "url": "https://www.boulderwelt-muenchen-ost.de",
+        "location": "Munich",
+        "function": "get_occupancy_boulderwelt",
+        "lat": 48.1258625,
+        "long": 11.6088936
+    },
+    "Munich West Boulderwelt": {
+        "url": "https://www.boulderwelt-muenchen-west.de",
+        "location": "Munich",
+        "function": "get_occupancy_boulderwelt",
+        "lat": 48.1363848,
+        "long": 11.4182376
+    },
+    "Munich South Boulderwelt": {
+        "url": "https://www.boulderwelt-muenchen-sued.de",
+        "location": "Munich",
+        "function": "get_occupancy_boulderwelt",
+        "lat": 48.0406477,
+        "long": 11.5936232
+    },
+    "Munich Einstein": {
+        "url": "https://muenchen.einstein-boulder.com",
+        "location": "Munich",
+        "function": "get_occupancy_einstein",
+        "lat": 48.1405753,
+        "long": 11.5206076
+    },
+    "Munich Freimann DAV": {
+        "url": "https://www.kbfreimann.de",
+        "location": "Munich",
+        "function": "get_occupancy_dav",
+        "lat": 48.2067671,
+        "long": 11.6157703
+    },
+    "Munich Thalkirchen DAV": {
+        "url": "https://www.kbthalkirchen.de",
+        "location": "Munich",
+        "function": "get_occupancy_dav",
+        "lat": 48.1020222,
+        "long": 11.5431923
+    },
+    "Munich Heavens Gate": {
+        "url": "https://www.heavensgate-muc.de/",
+        "location": "Munich",
+        "function": "get_occupancy_heavens",
+        "lat": 48.1240871,
+        "long": 11.6045269
+    },
+    "Regensburg Boulderwelt": {
+        "url": "https://www.boulderwelt-regensburg.de",
+        "location": "Regensburg",
+        "function": "get_occupancy_boulderwelt",
+        "lat": 49.032152,
+        "long": 12.1266388
+    },
+    "Regensburg DAV": {
+        "url": "https://www.kletterzentrum-regensburg.de",
+        "location": "Regensburg",
+        "function": "get_occupancy_dav_regensburg",
+        "lat": 49.042709,
+        "long": 12.0838051
+    }
+}
