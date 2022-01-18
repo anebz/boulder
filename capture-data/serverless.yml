@@ -25,6 +25,7 @@ provider:
     OWM_API: ${file(config.json):OWM_API}
     BUCKETNAME: bboulderdataset
     CSVNAME: boulderdata.csv
+    GYMDATANAME: gymdata.json
 
   iamRoleStatements:
     - Effect: "Allow"

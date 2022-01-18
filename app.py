@@ -11,87 +11,10 @@ from src.visualize_data import avg_data_day, given_day, preprocess_current_data,
 bucketname = 'bboulderdataset'
 dfname = 'boulderdata.csv'
 modelname = 'model.dat'
+gymdataname = 'gymdata.json'
 s3 = boto3.client('s3')
 
-gyms = {
-    'Bad Tölz DAV': {
-        'url': 'https://www.kletterzentrum-badtoelz.de',
-        'lat': 47.7593381,
-        'long': 11.5767634
-    },
-    'Berlin Magicmountain': {
-        'url': 'https://www.magicmountain.de/preise',
-        'lat': 52.5487662,
-        'long': 13.3793593
-    },
-    'Braunschweig Fliegerhalle': {
-        'url': 'https://www.fliegerhalle-bs.de',
-        'lat': 52.2504313,
-        'long': 10.5039853
-    },
-    'Dortmund Boulderwelt': {
-        'url': 'https://www.boulderwelt-dortmund.de',
-        'lat': 51.4945889,
-        'long': 7.3755849
-    },
-    'Frankfurt Boulderwelt': {
-        'url': 'https://www.boulderwelt-frankfurt.de',
-        'lat': 50.1639988,
-        'long': 8.6827019
-    },
-    'Gilching DAV': {
-        'url': 'https://www.kbgilching.de',
-        'lat': 48.1012676,
-        'long': 11.2989043
-    },
-    'Munich East Boulderwelt': {
-        'url': 'https://www.boulderwelt-muenchen-ost.de',
-        'lat': 48.1258625,
-        'long': 11.6088936
-    },
-    'Munich West Boulderwelt': {
-        'url': 'https://www.boulderwelt-muenchen-west.de',
-        'lat': 48.1363848,
-        'long': 11.4182376
-    },
-    'Munich South Boulderwelt': {
-        'url': 'https://www.boulderwelt-muenchen-sued.de',
-        'lat': 48.0406477,
-        'long': 11.5936232
-    },
-    'Munich Einstein': {
-        'url': 'https://muenchen.einstein-boulder.com',
-        'lat': 48.1405753,
-        'long': 11.5206076
-    },
-    'Munich Freimann DAV': {
-        'url': 'https://www.kbfreimann.de',
-        'lat': 48.2067671,
-        'long': 11.6157703
-    },
-    'Munich Thalkirchen DAV': {
-        'url': 'https://www.kbthalkirchen.de',
-        'lat': 48.1020222,
-        'long': 11.5431923
-    },
-    'Munich Heavens Gate': {
-        'url': 'https://www.heavensgate-muc.de/',
-        'lat': 48.1240871,
-        'long': 11.6045269 
-    },
-    'Regensburg Boulderwelt': {
-        'url': 'https://www.boulderwelt-regensburg.de',
-        'lat': 49.032152,
-        'long': 12.1266388
-    },
-    'Regensburg DAV': {
-        'url': 'https://www.kletterzentrum-regensburg.de',
-        'lat': 49.042709,
-        'long': 12.0838051
-    }
-}
-
-def st_given_day(boulderdf):
+def st_given_day(boulderdf, gymdatadf):
     # ask user for gym and date input
     st.markdown("""
     ## How full is my gym today?\n
@@ -104,7 +27,7 @@ def st_given_day(boulderdf):
     first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['time'], "%Y/%m/%d %H:%M")
     selected_date = st.date_input('Selected date', today, min_value=first_date, max_value=today)
 
-    st.markdown(f"### Showing results for [{selected_gym}]({gyms[selected_gym]['url']})\nOccupancy shown in percentage")
+    st.markdown(f"### Showing results for [{selected_gym}]({gymdatadf[selected_gym]['url']})\nOccupancy shown in percentage")
 
     # display the data for the given day
     givendaydf = given_day(boulderdf, str(selected_date), selected_gym)
@@ -178,8 +101,11 @@ if __name__ == "__main__":
     st.write("Github repo: [![Star](https://img.shields.io/github/stars/anebz/boulder.svg?logo=github&style=social)](https://gitHub.com/anebz/boulder)")
     st.image('https://land8.com/wp-content/uploads/2017/07/Bouldering1.jpg', width=700)
 
+    s3.download_file(bucketname, gymdataname, gymdataname)
+    gymdatadf = pd.read_json(gymdataname)
+
     # plot map with gym coordinates
-    st.map(pd.DataFrame([[gyms[gym_name]['lat'], gyms[gym_name]['long']] for gym_name in gyms], columns=['lat', 'lon']))
+    st.map(pd.DataFrame([[gymdatadf[gym_name]['lat'], gymdatadf[gym_name]['long']] for gym_name in gymdatadf], columns=['lat', 'lon']))
 
     # set up analytics
     if not os.path.isfile('firestore-key.json'):
@@ -189,7 +115,7 @@ if __name__ == "__main__":
     s3.download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
 
-    selected_gym, selected_date = st_given_day(boulderdf)
+    selected_gym, selected_date = st_given_day(boulderdf, gymdatadf)
     # only show prediction for current day
     #if str(selected_date) == str(datetime.datetime.today().strftime('%Y-%m-%d')):
     #    st_prediction(boulderdf, selected_gym)

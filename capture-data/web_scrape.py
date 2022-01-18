@@ -11,6 +11,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 
+s3 = boto3.client('s3')
 
 def get_occupancy_boulderwelt(gym_name:str, url: str) -> tuple():
     # make POST request to admin-ajax.php 
@@ -139,84 +140,6 @@ def get_occupancy_heavens(gym_name:str, url: str) -> tuple():
     return occupancy
 
 
-gyms = {
-    'Bad Tölz DAV': {
-        'url': 'https://www.kletterzentrum-badtoelz.de/',
-        'location': 'Bad Tolz',
-        'function': get_occupancy_dav
-    },
-    'Berlin Magicmountain': {
-        'url': 'https://www.magicmountain.de/preise',
-        'location': 'Berlin',
-        'function': get_occupancy_magicmountain
-    },
-    'Braunschweig Fliegerhalle': {
-        'url': 'https://www.fliegerhalle-bs.de/',
-        'location': 'Braunschweig',
-        'function': get_occupancy_braunschweig
-    },
-    'Dortmund Boulderwelt': {
-        'url': 'https://www.boulderwelt-dortmund.de',
-        'location': 'Dortmund',
-        'function': get_occupancy_boulderwelt
-    },
-    'Frankfurt Boulderwelt': {
-        'url': 'https://www.boulderwelt-frankfurt.de',
-        'location': 'Frankfurt',
-        'function': get_occupancy_boulderwelt
-    },
-    'Gilching DAV': {
-        'url': 'https://www.kbgilching.de/',
-        'location': 'Gilching',
-        'function': get_occupancy_dav
-    },
-    'Munich East Boulderwelt': {
-        'url': 'https://www.boulderwelt-muenchen-ost.de',
-        'location': 'Munich',
-        'function': get_occupancy_boulderwelt
-    },
-    'Munich West Boulderwelt': {
-        'url': 'https://www.boulderwelt-muenchen-west.de',
-        'location': 'Munich',
-        'function': get_occupancy_boulderwelt
-    },
-    'Munich South Boulderwelt': {
-        'url': 'https://www.boulderwelt-muenchen-sued.de',
-        'location': 'Munich',
-        'function': get_occupancy_boulderwelt
-    },
-    'Munich Einstein': {
-        'url': 'https://muenchen.einstein-boulder.com/',
-        'location': 'Munich',
-        'function': get_occupancy_einstein
-    },
-    'Munich Freimann DAV': {
-        'url': 'https://www.kbfreimann.de/',
-        'location': 'Munich',
-        'function': get_occupancy_dav
-    },
-    'Munich Thalkirchen DAV': {
-        'url': 'https://www.kbthalkirchen.de/',
-        'location': 'Munich',
-        'function': get_occupancy_dav
-    },
-    'Munich Heavens Gate': {
-        'url': 'https://www.heavensgate-muc.de/',
-        'location': 'Munich',
-        'function': get_occupancy_heavens
-    },
-    'Regensburg Boulderwelt': {
-        'url': 'https://www.boulderwelt-regensburg.de',
-        'location': 'Regensburg',
-        'function': get_occupancy_boulderwelt
-    },
-    'Regensburg DAV': {
-        'url': 'https://www.kletterzentrum-regensburg.de/',
-        'location': 'Regensburg',
-        'function': get_occupancy_dav_regensburg
-    }
-}
-
 def get_weather_info(location: str) -> tuple():
     '''
     Get weather temperature and status for a specific location
@@ -236,11 +159,13 @@ def get_weather_info(location: str) -> tuple():
     return temp, status
 
 
-def scrape_websites(current_time: str) -> pd.DataFrame:
+def scrape_websites(current_time: str, gymdatadf: pd.DataFrame) -> pd.DataFrame:
     webdata = []
-    for gym_name, gym_data in gyms.items():
+    for gym_name, gym_data in gymdatadf.items():
         weather_temp, weather_status = get_weather_info(gym_data['location'])
-        occupancy = gym_data['function'](gym_name, gym_data['url'])
+        # string -> callable function https://stackoverflow.com/a/22021058/4569908
+        scrape_data = globals()[gym_data['function']]
+        occupancy = scrape_data(gym_name, gym_data['url'])
         print(f"{gym_name}: occupancy={occupancy}, temp={weather_temp}, status={weather_status}")
         if occupancy == 0:
             continue
@@ -281,17 +206,21 @@ def lambda_handler(event, context):
     if current_time_hh_mm < '07:00' or current_time_hh_mm > '23:00':
         print("Scraping outside of opening hours, skipping")
         return
+
+    # download gym data from S3
+    s3.download_file(os.environ['BUCKETNAME'], os.environ['GYMDATANAME'], f"/tmp/{os.environ['GYMDATANAME']}")
+    gymdatadf = pd.read_json(f"/tmp/{os.environ['GYMDATANAME']}")
     
     print(f"Current time: {current_time}")
-    webdf = scrape_websites(current_time)
+    webdf = scrape_websites(current_time, gymdatadf)
 
     # only update if occupancy in gyms is > 0
     if webdf.empty:
         print("Nothing was scraped, S3 is not updated")
         return
 
+
     # download dataset from S3
-    s3 = boto3.client('s3')
     dfpath = f"/tmp/{os.environ['CSVNAME']}"
     s3.download_file(os.environ['BUCKETNAME'], os.environ['CSVNAME'], dfpath)
 
