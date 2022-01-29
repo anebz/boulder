@@ -13,6 +13,10 @@ from bs4 import BeautifulSoup
 
 s3 = boto3.client('s3')
 
+##########################
+# Gym scraping functions #
+##########################
+
 def get_occupancy_boulderwelt(gym_name:str, url: str) -> tuple():
     # make POST request to admin-ajax.php 
     req = requests.post(f"{url}/wp-admin/admin-ajax.php", data={"action": "cxo_get_crowd_indicator"})
@@ -41,7 +45,6 @@ def get_occupancy_boulderwelt(gym_name:str, url: str) -> tuple():
         occupancy = 0
     return occupancy
 
-
 def get_occupancy_einstein(gym_name:str, url: str) -> tuple():
     with requests.Session() as session:
         page = session.get(url)
@@ -59,7 +62,6 @@ def get_occupancy_einstein(gym_name:str, url: str) -> tuple():
             occupancy = 0
     return occupancy
 
-
 def get_occupancy_magicmountain(gym_name:str, url: str) -> tuple():
     request_url = 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6Ik1hZ2ljTW91bnRhaW4yMDIwMTQifQ.8919GglOcSMn9jl48zZVqNtZzXHh9RX23pN9F6DgX3E&ampel=1'
     page = requests.get(request_url)
@@ -67,11 +69,10 @@ def get_occupancy_magicmountain(gym_name:str, url: str) -> tuple():
         return 0
     soup = BeautifulSoup(page.content, 'html.parser')
     try:
-        occupancy = re.search(r'left: (\d*)%', str(soup.find_all("div", class_="pointer-image")[0]['style'])).group(1)
+        occupancy = int(re.search(r'left: (\d*)%', str(soup.find_all("div", class_="pointer-image")[0]['style'])).group(1))
     except:
         occupancy = 0
     return occupancy
-
 
 def get_occupancy_dav(gym_name:str, url: str) -> tuple():
     request_url = 'https://tickboard.de/public/pos_manager/CustomerEntries/getEntriesLeft'
@@ -88,7 +89,6 @@ def get_occupancy_dav(gym_name:str, url: str) -> tuple():
         occupancy = 0
     return occupancy
 
-
 def get_occupancy_dav_regensburg(gym_name:str, url: str) -> tuple():
     # found the request in the website's developer tools. this returns a long string. use regex
     request_url = 'https://126.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=THbq9w2DkUhmaKv7nvrXraeFQ8BSYf6C'
@@ -101,31 +101,25 @@ def get_occupancy_dav_regensburg(gym_name:str, url: str) -> tuple():
         occupancy = 0
     return occupancy
 
-
 def get_occupancy_braunschweig(gym_name:str, url: str) -> tuple():
     # found the request in the website's developer tools. this returns a long string. use regex
-    # innen
-    request_url_1 = 'https://158.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=yspPh6Mr2KdST3br8WC7X8p6BdETgmPn&hid=158&container=trafficlightContainer_1&type=2&area=1'
-    # draußen
-    request_url_2 = 'https://158.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=yspPh6Mr2KdST3br8WC7X8p6BdETgmPn&hid=158&container=trafficlightContainer_2&type=2&area=2'
-    page = requests.get(request_url_1)
-    if page.status_code != 200:
-        return 0
-    try:
-        occupancy_1 = re.findall(r'width: (.*)%', page.text)[0]
-    except:
-        occupancy_1 = 0
+    # innen, draußen
+    request_url = ['https://158.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=yspPh6Mr2KdST3br8WC7X8p6BdETgmPn&hid=158&container=trafficlightContainer_1&type=2&area=1',
+    'https://158.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=yspPh6Mr2KdST3br8WC7X8p6BdETgmPn&hid=158&container=trafficlightContainer_2&type=2&area=2']
+    
+    occupancies = []
+    for url in request_url:
+        page = requests.get(url)
+        if page.status_code != 200:
+            return 0
+        try:
+            occupancy = re.findall(r'width: (.*)%', page.text)[0]
+        except:
+            occupancy = 0
+        occupancies.append(occupancy)
 
-    page = requests.get(request_url_2)
-    if page.status_code != 200:
-        return 0
-    try:
-        occupancy_2 = re.findall(r'width: (.*)%', page.text)[0]
-    except:
-        occupancy_2 = 0
-    occupancy = occupancy_1 + '/' + occupancy_2
+    occupancy = '/'.join(occupancies)
     return occupancy
-
 
 def get_occupancy_heavens(gym_name:str, url: str) -> tuple():
     # found the request in the website's developer tools. this returns a long string. use regex
@@ -139,6 +133,117 @@ def get_occupancy_heavens(gym_name:str, url: str) -> tuple():
         occupancy = 0
     return occupancy
 
+def get_occupancy_straubing(gym_name:str, url: str) -> tuple():
+    # found the request in the website's developer tools. this returns a long string. use regex
+    request_url = 'https://167.webclimber.de/de/trafficlight?key=9hwaBUT2G3PbrUQZ1xG3w4xCzvh98SN3'
+    page = requests.get(request_url)
+    if page.status_code != 200:
+        return 0
+    try:
+        occupancy = int(re.findall(r'width: (.*)%', page.text)[0])
+    except:
+        occupancy = 0
+    return occupancy
+
+def get_occupancy_landshut(gym_name:str, url: str) -> tuple():
+    # found the request in the website's developer tools. this returns a long string. use regex
+    # klettern, bouldern, outdoors
+    request_url = ['https://157.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=CycEfe2pf8xmNfM39b63UeFcUz4ARsWP&hid=157&container=trafficlightContainer_1&type=2&area=1',
+    'https://157.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=CycEfe2pf8xmNfM39b63UeFcUz4ARsWP&hid=157&container=trafficlightContainer_2&type=2&area=2',
+    'https://157.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=CycEfe2pf8xmNfM39b63UeFcUz4ARsWP&hid=157&container=trafficlightContainer_3&type=2&area=6']
+    
+    occupancies = []
+    for url in request_url:
+        page = requests.get(url)
+        if page.status_code != 200:
+            return 0
+        try:
+            occupancy = int(re.findall(r'width: (.*)%', page.text)[0])
+        except:
+            occupancy = 0
+        occupancies.append(occupancy)
+
+    occupancy = '/'.join(occupancies)
+    return occupancy
+
+def get_occupancy_burgoberbach(gym_name:str, url: str) -> tuple():
+    # found the request in the website's developer tools. this returns a long string. use regex
+    # klettern, bouldern, outdoors
+    request_url = 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6IkJvdWxkZXJIYWxsIn0.jUG93IaTtWf--d7mPMuZ1wPkBvmXSm2MhhcKf6HQeMA&ampel=1'
+    page = requests.get(request_url)
+    if page.status_code != 200:
+        return 0
+    soup = BeautifulSoup(page.content, 'html.parser')
+    try:
+        occupancy = int(re.search(r'left: (\d*)%', str(soup.find_all("div", class_="pointer-image")[0]['style'])).group(1))
+    except:
+        occupancy = 0
+    return occupancy
+
+
+def get_occupancy_steinbock(gym_name:str, url: str) -> tuple():
+    # found the request in the website's developer tools. this returns a long string. use regex
+    url_mappings = {
+        'Erlangen': 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6IlN0ZWluYm9ja0VybGFuZ2VuMzkyMDIxIn0.jchq4dpdvDPMWYXUEFRdeBCctqEJoIUIiC_6jvxFmSo&ampel=1',
+        'Konstanz': 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6IlN0ZWluYm9ja0tvbnN0YW56MzkyMDE5In0.Io2pIXQ4lXUmRXM3Q0snudOGYytyZkVv3hbSh_QrUA0&ampel=1',
+        'Nurnberg': 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6IlN0ZWluYm9ja05SQkcyMDIwMzkifQ.-HR_1FyjCV0NpmloWAeY5rMpzYke7VD-gcEf7z6xALI&ampel=1',
+        'Passau': 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6IlN0ZWluYm9ja1Bhc3NhdTE3In0.jlrNfNWhp0xGk3YDJNN__j4rtMUKhd_B8sdi_93MThY&ampel=1',
+        'Zirndorf': 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6Ilppcm5kb3JmIn0.JbdO230u8mmY0Oh5afF86yI3_sUwVmkPQiKfYpWwkOo&ampel=1'
+        }
+    
+    for location in url_mappings:
+        if location in gym_name:
+            request_url = url_mappings[location]
+            break
+    page = requests.get(request_url)
+    if page.status_code != 200:
+        return 0
+    soup = BeautifulSoup(page.content, 'html.parser')
+    try:
+        occupancy = int(re.search(r'left: (\d*)%', str(soup.find_all("div", class_="pointer-image")[0]['style'])).group(1))
+    except:
+        occupancy = 0
+    return occupancy
+
+def get_occupancy_nurnberg_factory(gym_name:str, url: str) -> tuple():
+    # found the request in the website's developer tools. this returns a long string. use regex
+    request_url = 'https://173.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=aHm2rs53fCs1H7F01dxDpeFZ5V3mKH8f&hid=173&container=trafficlightContainer&type=&area='
+    page = requests.get(request_url)
+    if page.status_code != 200:
+        return 0
+    try:
+        occupancy = int(re.findall(r'width: (.*)%', page.text)[0])
+    except:
+        occupancy = 0
+    return occupancy
+
+def get_occupancy_hersbruck(gym_name:str, url: str) -> tuple():
+    # found the request in the website's developer tools. this returns a long string. use regex
+    request_url = 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6IkRBVkhlcnNicnVjayJ9.EdAisBKvuApVOGYnctB9C-LZ2c3gu5kWp6CnzQPQgAk&amp'
+    page = requests.get(request_url)
+    if page.status_code != 200:
+        return 0
+    try:
+        besucher, frei = re.findall(r'<span data-value="(\d*)?"', page.text)
+        occupancy = int(int(besucher) * 100 / int(frei))
+    except:
+        occupancy = 0
+    return occupancy
+
+def get_occupancy_erlangen_dav(gym_name:str, url: str) -> tuple():
+    # found the request in the website's developer tools. this returns a long string. use regex
+    request_url = 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6IkRBVkVybGFuZ2VuMjMyMDIwIn0.Fr3KR0obdp_aYzCIclQTMZr0dVIxT0bfyUVODU_u64M'
+    page = requests.get(request_url)
+    if page.status_code != 200:
+        return 0
+    try:
+        besucher, frei = re.findall(r'<span data-value="(\d*)?"', page.text)
+        occupancy = int(int(besucher) * 100 / int(frei))
+    except:
+        occupancy = 0
+    return occupancy
+
+####################################
 
 def get_weather_info(location: str) -> tuple():
     '''

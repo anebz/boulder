@@ -30,6 +30,23 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
                 for t in boulderdf['time'].unique()]
 
         avgdf = pd.DataFrame(data=avgdf, columns=['time', 'bouldern', 'klettern'])
+    elif 'Braunschweig' in gym:
+        boulderdf[['innen', 'außen']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
+        boulderdf['innen'] = pd.to_numeric(boulderdf['innen'])
+        boulderdf['außen'] = pd.to_numeric(boulderdf['außen'])
+        avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['innen'].mean()), round(boulderdf[boulderdf['time'] == t]['außen'].mean())]\
+                for t in boulderdf['time'].unique()]
+
+        avgdf = pd.DataFrame(data=avgdf, columns=['time', 'innen', 'außen'])
+    elif 'Landshut' in gym:
+        boulderdf[['klettern', 'bouldern', 'outdoors']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
+        boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
+        boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
+        boulderdf['outdoors'] = pd.to_numeric(boulderdf['outdoors'])
+        avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['klettern'].mean()), round(boulderdf[boulderdf['time'] == t]['bouldern'].mean()), round(boulderdf[boulderdf['time'] == t]['outdoors'].mean())]\
+                for t in boulderdf['time'].unique()]
+
+        avgdf = pd.DataFrame(data=avgdf, columns=['time', 'klettern', 'bouldern', 'outdoors'])
     else:
         # normal case, only one occupancy info
         # obtain the time and occupancy means
@@ -72,6 +89,12 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
         boulderdf[['innen', 'außen']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
         boulderdf['innen'] = pd.to_numeric(boulderdf['innen'])
         boulderdf['außen'] = pd.to_numeric(boulderdf['außen'])
+        boulderdf.drop('occupancy', axis=1, inplace=True)
+    elif 'Landshut' in gym:
+        boulderdf[['klettern', 'bouldern', 'outdoors']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
+        boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
+        boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
+        boulderdf['outdoors'] = pd.to_numeric(boulderdf['outdoors'])
         boulderdf.drop('occupancy', axis=1, inplace=True)
     else:
         boulderdf['occupancy'] = pd.to_numeric(boulderdf['occupancy'])

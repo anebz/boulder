@@ -20,6 +20,13 @@
         "lat": 52.2504313,
         "long": 10.5039853
     },
+    "Burgoberbach Boulder Hall": {
+        "url": "https://boulderhall.de/",
+        "location": "Burgoberbach",
+        "function": "get_occupancy_burgoberbach",
+        "lat": 49.2386535,
+        "long": 10.6014892
+    },
     "Dortmund Boulderwelt": {
         "url": "https://www.boulderwelt-dortmund.de",
         "location": "Dortmund",
@@ -40,6 +47,41 @@
         "function": "get_occupancy_dav",
         "lat": 48.1012676,
         "long": 11.2989043
+    },
+    "Erlangen DAV": {
+        "url": "https://www.kletter-und-vereinszentrum.de/",
+        "location": "Erlangen",
+        "function": "get_occupancy_erlangen_dav",
+        "lat": 49.5794993,
+        "long": 11.0141647
+    },
+    "Erlangen Der Steinbock": {
+        "url": "https://www.dersteinbock-erlangen.de/",
+        "location": "Erlangen",
+        "function": "get_occupancy_steinbock",
+        "lat": 49.5743588,
+        "long": 10.9967687
+    },
+    "Hersbruck Raiffeisebank": {
+        "url": "https://www.raiffeisenbank-kletterwelt.de",
+        "location": "Hersbruck",
+        "function": "get_occupancy_steinbock",
+        "lat": 49.505307,
+        "long": 11.439391
+    },
+    "Konstanz Der Steinbock": {
+        "url": "https://www.dersteinbock-konstanz.de/",
+        "location": "Konstanz",
+        "function": "get_occupancy_steinbock",
+        "lat": 47.6751636,
+        "long": 9.1415313
+    },
+    "Landshut DAV": {
+        "url": "https://www.kletterzentrum-landshut.de/",
+        "location": "Landshut",
+        "function": "get_occupancy_landshut",
+        "lat": 48.5478818,
+        "long": 12.179924
     },
     "Munich East Boulderwelt": {
         "url": "https://www.boulderwelt-muenchen-ost.de",
@@ -90,6 +132,27 @@
         "lat": 48.1240871,
         "long": 11.6045269
     },
+    "Nürnberg Der Steinbock": {
+        "url": "https://www.dersteinbock-nuernberg.de/",
+        "location": "Nürnberg",
+        "function": "get_occupancy_nurnberg_steinbock",
+        "lat": 49.45098,
+        "long": 11.0282128
+    },
+    "Nürnberg climbing factory": {
+        "url": "https://climbing-factory.de/startseite.html",
+        "location": "Nürnberg",
+        "function": "get_occupancy_nurnberg_factory",
+        "lat": 49.45967,
+        "long": 11.03484
+    },
+    "Passau Der Steinbock": {
+        "url": "https://www.dersteinbock-passau.de/",
+        "location": "Passau",
+        "function": "get_occupancy_steinbock",
+        "lat": 48.5588132,
+        "long": 13.4205045
+    },
     "Regensburg Boulderwelt": {
         "url": "https://www.boulderwelt-regensburg.de",
         "location": "Regensburg",
@@ -103,5 +166,19 @@
         "function": "get_occupancy_dav_regensburg",
         "lat": 49.042709,
         "long": 12.0838051
+    },
+    "Straubing Boulderhalle": {
+        "url": "https://www.boulderhalle-straubing.de/",
+        "location": "Straubing",
+        "function": "get_occupancy_straubing",
+        "lat": 48.8779766,
+        "long": 12.5621222
+    },
+    "Zirndorf Der Steinbock": {
+        "url": "https://www.dersteinbock-zirndorf.de/",
+        "location": "Zirndorf",
+        "function": "get_occupancy_steinbock",
+        "lat": 49.443067,
+        "long": 10.9592664
     }
 }
