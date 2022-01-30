@@ -158,7 +158,7 @@ def get_occupancy_landshut(gym_name:str, url: str) -> tuple():
         if page.status_code != 200:
             return 0
         try:
-            occupancy = int(re.findall(r'width: (.*)%', page.text)[0])
+            occupancy = re.findall(r'width: (.*)%', page.text)[0]
         except:
             occupancy = 0
         occupancies.append(occupancy)

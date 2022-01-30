@@ -65,7 +65,7 @@
     "Hersbruck Raiffeisebank": {
         "url": "https://www.raiffeisenbank-kletterwelt.de",
         "location": "Hersbruck",
-        "function": "get_occupancy_steinbock",
+        "function": "get_occupancy_hersbruck",
         "lat": 49.505307,
         "long": 11.439391
     },
@@ -132,14 +132,14 @@
         "lat": 48.1240871,
         "long": 11.6045269
     },
-    "Nürnberg Der Steinbock": {
+    "Nurnberg Der Steinbock": {
         "url": "https://www.dersteinbock-nuernberg.de/",
         "location": "Nürnberg",
-        "function": "get_occupancy_nurnberg_steinbock",
+        "function": "get_occupancy_steinbock",
         "lat": 49.45098,
         "long": 11.0282128
     },
-    "Nürnberg climbing factory": {
+    "Nurnberg climbing factory": {
         "url": "https://climbing-factory.de/startseite.html",
         "location": "Nürnberg",
         "function": "get_occupancy_nurnberg_factory",
