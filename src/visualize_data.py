@@ -21,7 +21,7 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     boulderdf['time'] = boulderdf['time'].dt.strftime('%H:%M')
 
     # divide into 2 dfs in DAV gyms
-    if 'DAV' in gym:
+    if 'DAV' in gym and 'Regensburg' not in gym and 'Erlangen' not in gym:
         boulderdf[['bouldern', 'klettern']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
         boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
         boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
@@ -80,7 +80,7 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     boulderdf['time'] = boulderdf['time'].apply(lambda x: x.split()[1])
 
     # divide occupancy into 2 columns in DAV gyms
-    if 'DAV' in gym and 'Regensburg' not in gym:
+    if 'DAV' in gym and 'Regensburg' not in gym and 'Erlangen' not in gym:
         boulderdf[['bouldern', 'klettern']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
         boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
         boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
