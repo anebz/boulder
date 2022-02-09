@@ -9,21 +9,21 @@
     "Berlin Magicmountain": {
         "url": "https://www.magicmountain.de/preise",
         "location": "Berlin",
-        "function": "get_occupancy_magicmountain",
+        "function": "get_occupancy_boulderado",
         "lat": 52.5487662,
         "long": 13.3793593
     },
     "Braunschweig Fliegerhalle": {
         "url": "https://www.fliegerhalle-bs.de",
         "location": "Braunschweig",
-        "function": "get_occupancy_braunschweig",
+        "function": "get_occupancy_webclimber",
         "lat": 52.2504313,
         "long": 10.5039853
     },
     "Burgoberbach Boulder Hall": {
         "url": "https://boulderhall.de/",
         "location": "Burgoberbach",
-        "function": "get_occupancy_burgoberbach",
+        "function": "get_occupancy_boulderado",
         "lat": 49.2386535,
         "long": 10.6014892
     },
@@ -58,7 +58,7 @@
     "Erlangen Der Steinbock": {
         "url": "https://www.dersteinbock-erlangen.de/",
         "location": "Erlangen",
-        "function": "get_occupancy_steinbock",
+        "function": "get_occupancy_boulderado",
         "lat": 49.5743588,
         "long": 10.9967687
     },
@@ -72,14 +72,14 @@
     "Konstanz Der Steinbock": {
         "url": "https://www.dersteinbock-konstanz.de/",
         "location": "Konstanz",
-        "function": "get_occupancy_steinbock",
+        "function": "get_occupancy_boulderado",
         "lat": 47.6751636,
         "long": 9.1415313
     },
     "Landshut DAV": {
         "url": "https://www.kletterzentrum-landshut.de/",
         "location": "Landshut",
-        "function": "get_occupancy_landshut",
+        "function": "get_occupancy_webclimber",
         "lat": 48.5478818,
         "long": 12.179924
     },
@@ -128,28 +128,28 @@
     "Munich Heavens Gate": {
         "url": "https://www.heavensgate-muc.de/",
         "location": "Munich",
-        "function": "get_occupancy_heavens",
+        "function": "get_occupancy_webclimber",
         "lat": 48.1240871,
         "long": 11.6045269
     },
     "Nurnberg Der Steinbock": {
         "url": "https://www.dersteinbock-nuernberg.de/",
         "location": "Nürnberg",
-        "function": "get_occupancy_steinbock",
+        "function": "get_occupancy_boulderado",
         "lat": 49.45098,
         "long": 11.0282128
     },
     "Nurnberg climbing factory": {
         "url": "https://climbing-factory.de/startseite.html",
         "location": "Nürnberg",
-        "function": "get_occupancy_nurnberg_factory",
+        "function": "get_occupancy_webclimber",
         "lat": 49.45967,
         "long": 11.03484
     },
     "Passau Der Steinbock": {
         "url": "https://www.dersteinbock-passau.de/",
         "location": "Passau",
-        "function": "get_occupancy_steinbock",
+        "function": "get_occupancy_boulderado",
         "lat": 48.5588132,
         "long": 13.4205045
     },
@@ -163,21 +163,21 @@
     "Regensburg DAV": {
         "url": "https://www.kletterzentrum-regensburg.de",
         "location": "Regensburg",
-        "function": "get_occupancy_dav_regensburg",
+        "function": "get_occupancy_webclimber",
         "lat": 49.042709,
         "long": 12.0838051
     },
     "Straubing Boulderhalle": {
         "url": "https://www.boulderhalle-straubing.de/",
         "location": "Straubing",
-        "function": "get_occupancy_straubing",
+        "function": "get_occupancy_webclimber",
         "lat": 48.8779766,
         "long": 12.5621222
     },
     "Zirndorf Der Steinbock": {
         "url": "https://www.dersteinbock-zirndorf.de/",
         "location": "Zirndorf",
-        "function": "get_occupancy_steinbock",
+        "function": "get_occupancy_boulderado",
         "lat": 49.443067,
         "long": 10.9592664
     }
