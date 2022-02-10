@@ -13,6 +13,27 @@
         "lat": 52.5487662,
         "long": 13.3793593
     },
+    "Biberach DAV": {
+        "url": "https://www.sparkassen-dome-biberach.de",
+        "location": "Biberach",
+        "function": "get_occupancy_webclimber",
+        "lat": 48.0939544,
+        "long": 9.7809511
+    },
+    "Bonn Boulders Habitat": {
+        "url": "https://www.bouldershabitat.de",
+        "location": "Bonn",
+        "function": "get_occupancy_webclimber",
+        "lat": 50.7379625,
+        "long": 7.0630076
+    },
+    "Bonn Beuel Boulders Habitat": {
+        "url": "https://www.bouldershabitat.de",
+        "location": "Bonn",
+        "function": "get_occupancy_webclimber",
+        "lat": 50.7382663,
+        "long": 7.0832996
+    },
     "Braunschweig Fliegerhalle": {
         "url": "https://www.fliegerhalle-bs.de",
         "location": "Braunschweig",
@@ -21,7 +42,7 @@
         "long": 10.5039853
     },
     "Burgoberbach Boulder Hall": {
-        "url": "https://boulderhall.de/",
+        "url": "https://boulderhall.de",
         "location": "Burgoberbach",
         "function": "get_occupancy_boulderado",
         "lat": 49.2386535,
@@ -34,12 +55,40 @@
         "lat": 51.4945889,
         "long": 7.3755849
     },
+    "Erlangen DAV": {
+        "url": "https://www.kletter-und-vereinszentrum.de",
+        "location": "Erlangen",
+        "function": "get_occupancy_erlangen_dav",
+        "lat": 49.5794993,
+        "long": 11.0141647
+    },
+    "Erlangen Der Steinbock": {
+        "url": "https://www.dersteinbock-erlangen.de",
+        "location": "Erlangen",
+        "function": "get_occupancy_boulderado",
+        "lat": 49.5743588,
+        "long": 10.9967687
+    },
     "Frankfurt Boulderwelt": {
         "url": "https://www.boulderwelt-frankfurt.de",
         "location": "Frankfurt",
         "function": "get_occupancy_boulderwelt",
         "lat": 50.1639988,
         "long": 8.6827019
+    },
+    "Frankfurt Kletterbar": {
+        "url": "https://kletterbar-offenbach.de/",
+        "location": "Frankfurt",
+        "function": "get_occupancy_webclimber",
+        "lat": 50.0980077,
+        "long": 8.6983457
+    },
+    "Freising Kletterzentrum": {
+        "url": "https://www.kletterzentrum-freising.de",
+        "location": "Freising",
+        "function": "get_occupancy_webclimber",
+        "lat": 48.3926313,
+        "long": 11.7372441
     },
     "Gilching DAV": {
         "url": "https://www.kbgilching.de",
@@ -48,19 +97,12 @@
         "lat": 48.1012676,
         "long": 11.2989043
     },
-    "Erlangen DAV": {
-        "url": "https://www.kletter-und-vereinszentrum.de/",
-        "location": "Erlangen",
-        "function": "get_occupancy_erlangen_dav",
-        "lat": 49.5794993,
-        "long": 11.0141647
-    },
-    "Erlangen Der Steinbock": {
-        "url": "https://www.dersteinbock-erlangen.de/",
-        "location": "Erlangen",
-        "function": "get_occupancy_boulderado",
-        "lat": 49.5743588,
-        "long": 10.9967687
+    "Hannover Kletterbar": {
+        "url": "https://kletterbar-hannover.de/",
+        "location": "Hannover",
+        "function": "get_occupancy_webclimber",
+        "lat": 52.4217047,
+        "long": 9.7232953
     },
     "Hersbruck Raiffeisebank": {
         "url": "https://www.raiffeisenbank-kletterwelt.de",
@@ -68,6 +110,27 @@
         "function": "get_occupancy_hersbruck",
         "lat": 49.505307,
         "long": 11.439391
+    },
+    "Ingolstadt DAV": {
+        "url": "https://www.dav-ringsee.de",
+        "location": "Ingolstadt",
+        "function": "get_occupancy_webclimber",
+        "lat": 48.7503109,
+        "long": 11.4142645
+    },
+    "Kiel Kletterbar": {
+        "url": "https://kletterbar-kiel.de/",
+        "location": "Kiel",
+        "function": "get_occupancy_webclimber",
+        "lat": 54.3092377,
+        "long": 10.0290279
+    },
+    "Koeln Kletterfabrik": {
+        "url": "https://www.kletterfabrik.koeln/",
+        "location": "Koeln",
+        "function": "get_occupancy_webclimber",
+        "lat": 50.947223,
+        "long": 6.9047001
     },
     "Konstanz Der Steinbock": {
         "url": "https://www.dersteinbock-konstanz.de/",
@@ -82,6 +145,13 @@
         "function": "get_occupancy_webclimber",
         "lat": 48.5478818,
         "long": 12.179924
+    },
+    "Memmingen DAV": {
+        "url": "https://boulderhalle-memmingen.de/",
+        "location": "Memmingen",
+        "function": "get_occupancy_webclimber",
+        "lat": 47.9747428,
+        "long": 10.1800658
     },
     "Munich East Boulderwelt": {
         "url": "https://www.boulderwelt-muenchen-ost.de",
@@ -167,12 +237,40 @@
         "lat": 49.042709,
         "long": 12.0838051
     },
+    "Reutlingen DAV": {
+        "url": "https://www.kletterzentrum-reutlingen.de",
+        "location": "Reutlingen",
+        "function": "get_occupancy_webclimber",
+        "lat": 48.5048371,
+        "long": 9.2014625
+    },
     "Straubing Boulderhalle": {
         "url": "https://www.boulderhalle-straubing.de/",
         "location": "Straubing",
         "function": "get_occupancy_webclimber",
         "lat": 48.8779766,
         "long": 12.5621222
+    },
+    "Stuttgart Roccadion": {
+        "url": "https://roccadion.de",
+        "location": "Stuttgart",
+        "function": "get_occupancy_webclimber",
+        "lat": 48.6956064,
+        "long": 9.0208369
+    },
+    "Stuttgart Rockerei": {
+        "url": "https://rockerei-stuttgart.de",
+        "location": "Stuttgart",
+        "function": "get_occupancy_webclimber",
+        "lat": 48.8348332,
+        "long": 9.1611959
+    },
+    "Tuebingen B12 DAV": {
+        "url": "https://b12-tuebingen.de/",
+        "location": "Tuebingen",
+        "function": "get_occupancy_webclimber",
+        "lat": 48.5223036,
+        "long": 9.0812478
     },
     "Zirndorf Der Steinbock": {
         "url": "https://www.dersteinbock-zirndorf.de/",

@@ -75,14 +75,30 @@ def get_occupancy_boulderado(gym_name:str, url: str) -> tuple():
 
 def get_occupancy_webclimber(gym_name:str, url: str) -> tuple():
     maps = {
+        'Biberach': ['https://207.webclimber.de/de/trafficlight?key=VNkR6RntCCRey5Y9XgmxMK6pg52qH6us'],
+        'Bonn Boulders Habitat': ['https://113.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=mu4Gk2NXGBfUU30McdwEkq18SDks2xDB&hid=113&container=trafficlightContainer&type=2&area=1'],
+        'Bonn Beuel Boulders Habitat': ['https://113.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=mu4Gk2NXGBfUU30McdwEkq18SDks2xDB&hid=113&container=trafficlightContainer_2&type=2&area=2'],
         'Braunschweig': ['https://158.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=yspPh6Mr2KdST3br8WC7X8p6BdETgmPn&hid=158&container=trafficlightContainer_1&type=2&area=1', #innen
                          'https://158.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=yspPh6Mr2KdST3br8WC7X8p6BdETgmPn&hid=158&container=trafficlightContainer_2&type=2&area=2'], #draußen
+        'Frankfurt Kletterbar': ['https://133.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=UtpHvbBVgevzEx1Ufw9fGTrxQfTP4Tba'],
+        'Freising': ['https://110.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=kqGSgwRfZbQDV2CrSku1AcCZ17RCyfQk&hid=110&container=trafficlightContainer_1&type=2&area=1',# kletter
+                     'https://110.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=kqGSgwRfZbQDV2CrSku1AcCZ17RCyfQk&hid=110&container=trafficlightContainer_2&type=2&area=2'], # bouldern
+        'Hannover Kletterbar': ['https://145.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=f4573UP0g7EVDf2XFPZwHR8x8M88720E'],
         'Heavens': ['https://210.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=b8cab21X5BEfm2g8zr32eX1kgfwg1EQx'],
+        'Ingolstadt DAV': ['https://105.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=pWmH0TyDCMeBM4U5sEn6bwBqKTRt5Asq'],
+        'Kiel Kletterbar': ['https://170.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=DQ5nzAA3FqZzfvBcf1AnWyY3WB22nVrS'],
+        'Koeln Kletterfabrik': ['https://121.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=9mQ2bg0FnNDSN9TACdem9rWE0VWuntdn'],
         'Landshut': ['https://157.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=CycEfe2pf8xmNfM39b63UeFcUz4ARsWP&hid=157&container=trafficlightContainer_1&type=2&area=1', # klettern
                      'https://157.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=CycEfe2pf8xmNfM39b63UeFcUz4ARsWP&hid=157&container=trafficlightContainer_2&type=2&area=2', # bouldern
                      'https://157.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=CycEfe2pf8xmNfM39b63UeFcUz4ARsWP&hid=157&container=trafficlightContainer_3&type=2&area=6'], # outdoors
-        'Nurnberg climbing factory': ['https://173.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=aHm2rs53fCs1H7F01dxDpeFZ5V3mKH8f&hid=173&container=trafficlightContainer&type=&area='],
+        'Memmingen': ['https://195.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=mG70kfF134tHyhE24suesB8fdMHSXAmw'],
+        'Nurnberg climbing factory': ['https://173.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=aHm2rs53fCs1H7F01dxDpeFZ5V3mKH8f'],
         'Regensburg DAV': ['https://126.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=THbq9w2DkUhmaKv7nvrXraeFQ8BSYf6C'],
+        'Reutlingen DAV': ['https://104.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=DTRNE01KU4Bub6BMz106MBAGaukYdzzb'],
+        'Tuebingen': ['https://111.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=184xNhv6RRU7H2gVg8QFyHCYxym8DKve'],
+        'Stuttgart Roccadion': ['https://151.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=vEa0X8u7Hn8G707q9qB00aUE9c35X4Bz'],
+        'Stuttgart Rockerei': ['https://171.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=2w26F5nRKv08Yacx7XBrXzhhHrVtYF1b&hid=171&container=trafficlightContainer_1&type=2&area=1', # klettern
+                               'https://171.webclimber.de/de/trafficlight?callback=WebclimberTrafficlight.insertTrafficlight&key=2w26F5nRKv08Yacx7XBrXzhhHrVtYF1b&hid=171&container=trafficlightContainer_2&type=2&area=2'], # bouldern
         'Straubing': ['https://167.webclimber.de/de/trafficlight?key=9hwaBUT2G3PbrUQZ1xG3w4xCzvh98SN3'],
     }
     # get corresponding link for gym
@@ -132,7 +148,8 @@ def get_occupancy_hersbruck(gym_name:str, url: str) -> tuple():
         return 0
     try:
         besucher, frei = re.findall(r'<span data-value="(\d*)?"', page.text)
-        occupancy = int(int(besucher) * 100 / int(frei))
+        besucher, frei = float(besucher), float(frei)
+        occupancy = int(besucher / (frei + besucher) * 100)
     except:
         occupancy = 0
     return occupancy
@@ -146,7 +163,8 @@ def get_occupancy_erlangen_dav(gym_name:str, url: str) -> tuple():
         return 0
     try:
         besucher, frei = re.findall(r'<span data-value="(\d*)?"', page.text)
-        occupancy = int(int(besucher) * 100 / int(frei))
+        besucher, frei = float(besucher), float(frei)
+        occupancy = int(besucher / (frei + besucher) * 100)
     except:
         occupancy = 0
     return occupancy
@@ -197,8 +215,9 @@ def scrape_websites(current_time: str, gymdatadf: pd.DataFrame) -> pd.DataFrame:
         # string -> callable function https://stackoverflow.com/a/22021058/4569908
         scrape_data = globals()[gym_data['function']]
         occupancy = scrape_data(gym_name, gym_data['url'])
+        occupancy = min(occupancy, 100)
         print(f"{gym_name}: occupancy={occupancy}, temp={weather_temp}, status={weather_status}")
-        if occupancy == 0:
+        if occupancy == 0 or occupancy == '0/0':
             continue
         webdata.append((current_time, gym_name, occupancy, weather_temp, weather_status))
   
