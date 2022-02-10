@@ -16,10 +16,7 @@ s3 = boto3.client('s3')
 
 def st_given_day(boulderdf, gymdatadf):
     # ask user for gym and date input
-    st.markdown("""
-    ## How full is my gym today?\n
-    Due to Corona, gyms have reduced their capacity. If the occupancy is above 100%, that means people are waiting to enter the gym.
-    """)
+    st.markdown("## How full is my gym today?")
 
     selected_gym = st.radio('Select a gym', sorted(list(boulderdf['gym_name'].unique())))
     today = datetime.date.today()
@@ -96,8 +93,8 @@ if __name__ == "__main__":
         page_title="Bouldern",
         #layout="wide",
         page_icon="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/271/person-climbing_1f9d7.png")
-    st.title('Boulder gym tracker')
-    st.markdown('**Update 29.01.2022: currently supporting 26 gyms!** 🚀')
+    st.title('Boulder gym tracker 🧗🧗‍♂️🧗‍♀️')
+    st.markdown('**Update 10.02.2022: currently supporting 40 gyms!** 🚀')
     st.write("Github repo: [![Star](https://img.shields.io/github/stars/anebz/boulder.svg?logo=github&style=social)](https://gitHub.com/anebz/boulder)")
     st.image('https://land8.com/wp-content/uploads/2017/07/Bouldering1.jpg', width=700)
 

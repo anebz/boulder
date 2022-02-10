@@ -21,14 +21,20 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
     boulderdf['time'] = boulderdf['time'].dt.strftime('%H:%M')
 
     # divide into 2 dfs in DAV gyms
-    if 'DAV' in gym and 'Regensburg' not in gym and 'Erlangen' not in gym:
+    if any(ext in gym for ext in ["Bad Tölz DAV", "Gilching DAV", "Munich Freimann DAV", "Munich Thalkirchen DAV"]):
         boulderdf[['bouldern', 'klettern']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
         boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
         boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
         # obtain the time and occupancy means
         avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['bouldern'].mean()), round(boulderdf[boulderdf['time'] == t]['klettern'].mean())]\
                 for t in boulderdf['time'].unique()]
-
+        avgdf = pd.DataFrame(data=avgdf, columns=['time', 'bouldern', 'klettern'])
+    elif 'Stuttgart Rockerei' in gym or 'Freising' in gym:
+        boulderdf[['klettern', 'bouldern']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
+        boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
+        boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
+        avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['bouldern'].mean()), round(boulderdf[boulderdf['time'] == t]['klettern'].mean())]\
+                for t in boulderdf['time'].unique()]
         avgdf = pd.DataFrame(data=avgdf, columns=['time', 'bouldern', 'klettern'])
     elif 'Braunschweig' in gym:
         boulderdf[['innen', 'außen']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
@@ -36,7 +42,6 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
         boulderdf['außen'] = pd.to_numeric(boulderdf['außen'])
         avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['innen'].mean()), round(boulderdf[boulderdf['time'] == t]['außen'].mean())]\
                 for t in boulderdf['time'].unique()]
-
         avgdf = pd.DataFrame(data=avgdf, columns=['time', 'innen', 'außen'])
     elif 'Landshut' in gym:
         boulderdf[['klettern', 'bouldern', 'outdoors']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
@@ -45,7 +50,6 @@ def avg_data_day(boulderdf: pd.DataFrame, day: int, gym: str) -> pd.DataFrame:
         boulderdf['outdoors'] = pd.to_numeric(boulderdf['outdoors'])
         avgdf = [[t, round(boulderdf[boulderdf['time'] == t]['klettern'].mean()), round(boulderdf[boulderdf['time'] == t]['bouldern'].mean()), round(boulderdf[boulderdf['time'] == t]['outdoors'].mean())]\
                 for t in boulderdf['time'].unique()]
-
         avgdf = pd.DataFrame(data=avgdf, columns=['time', 'klettern', 'bouldern', 'outdoors'])
     else:
         # normal case, only one occupancy info
@@ -80,10 +84,15 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
     boulderdf['time'] = boulderdf['time'].apply(lambda x: x.split()[1])
 
     # divide occupancy into 2 columns in DAV gyms
-    if 'DAV' in gym and 'Regensburg' not in gym and 'Erlangen' not in gym:
+    if any(ext in gym for ext in ["Bad Tölz DAV", "Gilching DAV", "Munich Freimann DAV", "Munich Thalkirchen DAV"]):
         boulderdf[['bouldern', 'klettern']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
         boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
         boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
+        boulderdf.drop('occupancy', axis=1, inplace=True)
+    elif 'Stuttgart Rockerei' in gym or 'Freising' in gym:
+        boulderdf[['klettern', 'bouldern']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
+        boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
+        boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
         boulderdf.drop('occupancy', axis=1, inplace=True)
     elif 'Braunschweig' in gym:
         boulderdf[['innen', 'außen']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
@@ -91,11 +100,13 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
         boulderdf['außen'] = pd.to_numeric(boulderdf['außen'])
         boulderdf.drop('occupancy', axis=1, inplace=True)
     elif 'Landshut' in gym:
-        boulderdf[['klettern', 'bouldern', 'outdoors']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
+        boulderdf[['klettern', 'col2']] = boulderdf['occupancy'].str.split('/', 1, expand=True)
+        boulderdf[['bouldern', 'outdoors']] = boulderdf['col2'].str.split('/', 1, expand=True)
         boulderdf['klettern'] = pd.to_numeric(boulderdf['klettern'])
         boulderdf['bouldern'] = pd.to_numeric(boulderdf['bouldern'])
         boulderdf['outdoors'] = pd.to_numeric(boulderdf['outdoors'])
         boulderdf.drop('occupancy', axis=1, inplace=True)
+        boulderdf.drop('col2', axis=1, inplace=True)
     else:
         boulderdf['occupancy'] = pd.to_numeric(boulderdf['occupancy'])
 
