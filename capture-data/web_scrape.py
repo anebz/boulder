@@ -56,9 +56,9 @@ def get_occupancy_boulderado(gym_name:str, url: str) -> tuple():
         'Zirndorf': 'https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6Ilppcm5kb3JmIn0.JbdO230u8mmY0Oh5afF86yI3_sUwVmkPQiKfYpWwkOo&ampel=1'
     }
     # get corresponding link for gym
-    for location in url_mappings:
+    for location, link in url_mappings.items():
         if location in gym_name:
-            request_url = url_mappings[location]
+            request_url = link
             break
     else:
         return 0
@@ -102,9 +102,9 @@ def get_occupancy_webclimber(gym_name:str, url: str) -> tuple():
         'Straubing': ['https://167.webclimber.de/de/trafficlight?key=9hwaBUT2G3PbrUQZ1xG3w4xCzvh98SN3'],
     }
     # get corresponding link for gym
-    for key in maps:
+    for key, link in maps.items():
         if key in gym_name:
-            request_url = maps[key]
+            request_url = link
             break
     else:
         return 0
@@ -133,7 +133,7 @@ def get_occupancy_dav(gym_name:str, url: str) -> tuple():
     for res in results:
         name, klettern, bouldern = res
         if name.replace('KB ', '') in gym_name:
-            occupancy = bouldern + '/' + klettern
+            occupancy = f"{bouldern}/{klettern}"
             break
     else:
         occupancy = 0
@@ -215,7 +215,6 @@ def scrape_websites(current_time: str, gymdatadf: pd.DataFrame) -> pd.DataFrame:
         # string -> callable function https://stackoverflow.com/a/22021058/4569908
         scrape_data = globals()[gym_data['function']]
         occupancy = scrape_data(gym_name, gym_data['url'])
-        occupancy = min(occupancy, 100)
         print(f"{gym_name}: occupancy={occupancy}, temp={weather_temp}, status={weather_status}")
         if occupancy == 0 or occupancy == '0/0':
             continue

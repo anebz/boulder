@@ -137,3 +137,4 @@ dmypy.json
 node_modules/
 capture-data/*.json
 firestore-key.json
+model.dat
