@@ -100,7 +100,7 @@ def fill_nan_values(df: pd.DataFrame) -> pd.DataFrame:
                 for column in ['occupancy', 'waiting', 'weather_temp']:
                     # this might work with the dev version of scipy
                     func = interp1d(x_values, df_gym_day_noNan[column], kind='linear', bounds_error=False,  fill_value='extrapolate')
-                    
+
                     #fill in the interpolated value
                     timestamp_unix = (timestamp-pd.Timestamp("1970-01-01")) // pd.Timedelta('1s')
                     values = func([timestamp_unix])
@@ -120,10 +120,7 @@ def fill_nan_values(df: pd.DataFrame) -> pd.DataFrame:
                 df_gym_day_oneNan = df_gym_day_noNan.append(df.loc[index], ignore_index=False)
                 df_gym_day_oneNan = df_gym_day_oneNan.sort_values(by='current_time', ascending=True)
                 #Case 1: it is at the beginning:
-                if df_gym_day_oneNan.iloc[0].isnull().sum() == 1:
-                    shift = -1
-                else:
-                    shift = 1
+                shift = -1 if df_gym_day_oneNan.iloc[0].isnull().sum() == 1 else 1
                 df_gym_day_oneNan_shift = df_gym_day_oneNan.shift(shift)
                 df.loc[index, column] = df_gym_day_oneNan_shift.loc[index, column]
     return df

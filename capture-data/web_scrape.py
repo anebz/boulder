@@ -34,13 +34,13 @@ def get_occupancy_boulderwelt(gym_name:str, url: str) -> tuple():
         if 'queue' in data and int(data['queue']) > 0:
             occupancy += int(data['queue']) / 10
         return occupancy
-    
+
     # admin-ajax.php not working
     page = requests.get(url)
     if page.status_code != 200:
         return 0
     try:
-        occupancy = int(float(re.search(r'style="margin-left:(.*?)%"', page.text).group(1)))
+        occupancy = int(float(re.search(r'style="margin-left:(.*?)%"', page.text)[1]))
     except:
         occupancy = 0
     return occupancy
@@ -68,7 +68,13 @@ def get_occupancy_boulderado(gym_name:str, url: str) -> tuple():
         return 0
     soup = BeautifulSoup(page.content, 'html.parser')
     try:
-        occupancy = int(re.search(r'left: (\d*)%', str(soup.find_all("div", class_="pointer-image")[0]['style'])).group(1))
+        occupancy = int(
+            re.search(
+                r'left: (\d*)%',
+                str(soup.find_all("div", class_="pointer-image")[0]['style']),
+            )[1]
+        )
+
     except:
         occupancy = 0
     return occupancy
@@ -181,8 +187,8 @@ def get_occupancy_einstein(gym_name:str, url: str) -> tuple():
             frame = soup.select("iframe")[0]
             frame_url = urllib.parse.urljoin(url, frame["src"])
             response = session.get(frame_url)
-            frame_soup = BeautifulSoup(response.content, 'html.parser') 
-            occupancy = re.search(r'left: (\d+)%', str(frame_soup)).group(1)
+            frame_soup = BeautifulSoup(response.content, 'html.parser')
+            occupancy = re.search(r'left: (\d+)%', str(frame_soup))[1]
         except:
             occupancy = 0
     return occupancy
@@ -216,12 +222,20 @@ def scrape_websites(current_time: str, gymdatadf: pd.DataFrame) -> pd.DataFrame:
         scrape_data = globals()[gym_data['function']]
         occupancy = scrape_data(gym_name, gym_data['url'])
         print(f"{gym_name}: occupancy={occupancy}, temp={weather_temp}, status={weather_status}")
-        if occupancy == 0 or occupancy == '0/0':
+        if occupancy in [0, '0/0']:
             continue
         webdata.append((current_time, gym_name, occupancy, weather_temp, weather_status))
-  
-    webdf = pd.DataFrame(data=webdata, columns=['time', 'gym_name', 'occupancy', 'weather_temp', 'weather_status'])
-    return webdf
+
+    return pd.DataFrame(
+        data=webdata,
+        columns=[
+            'time',
+            'gym_name',
+            'occupancy',
+            'weather_temp',
+            'weather_status',
+        ],
+    )
 
 
 def get_current_time():
@@ -242,9 +256,7 @@ def get_current_time():
     current_min = int(dt.split(':')[1])
     distances = [abs(current_min - _min) for _min in minutes]
     closest_min = minutes[distances.index(min(distances))]
-    current_time = dt.replace(':'+str(current_min), ':'+str(closest_min))
-
-    return current_time
+    return dt.replace(f':{current_min}', f':{str(closest_min)}')
 
 
 def lambda_handler(event, context):
