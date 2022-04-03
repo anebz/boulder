@@ -16,8 +16,7 @@ import random
 class Testget_missing_aquisition_timestamps(unittest.TestCase):
     
     def gaussian(self, n, sigma, shift):
-        gauss = np.exp(-0.5*((n-shift)/sigma)**2)
-        return gauss
+        return np.exp(-0.5*((n-shift)/sigma)**2)
 
     def plot_gaussian(self):
         import matplotlib.pyplot as plt
@@ -37,13 +36,13 @@ class Testget_missing_aquisition_timestamps(unittest.TestCase):
         gym1 = 'muenchen-ost'
         gym2 = 'frankfurt'
         gyms_n = [gym1, gym1, gym1, gym2, gym2, gym2]
-        gyms = [[gyms_n[g] for n in day] for g,day in enumerate(days)]
+        gyms = [[gyms_n[g] for _ in day] for g,day in enumerate(days)]
         #occupancies=[[float(random.randint(0,100)) for n in day] for day in days]
         #making a gauss for occupancies
         occupancies = [self.gaussian(np.arange(0,len(day),1),len(day)/5,len(day)/2) for day in days]
         #waitings=[[float(random.randint(0,15)) for n in day] for day in days]
         waitings  =[self.gaussian(np.arange(0,len(day),1),len(day)/5,len(day)/2) for day in days]
-        temps = [[float(random.randint(0,15)) for n in day] for day in days]
+        temps = [[float(random.randint(0,15)) for _ in day] for day in days]
         temps = [self.gaussian(np.arange(0,len(day),1),len(day)/5,len(day)/2)-0.5 for day in days]
         #statuss=[[random.choice(['Clouds', 'Rain', 'Drizzle', 'Clear', 'Thunderstorm', 'Mist']) for n in day] for day in days]
         statuss = [[random.choice(['Clouds', 'Rain', 'Drizzle', 'Clear', 'Thunderstorm', 'Mist'])]*len(day) for day in days]
@@ -110,7 +109,7 @@ class Testget_missing_aquisition_timestamps(unittest.TestCase):
     def test_add_missing_timestamps(self):
         df = self.get_testset()
         #remove 8 values at random
-        for n in range(8):
+        for _ in range(8):
             df = df.drop([df.index[random.randint(0, len(df)-1)]])
         df2 = add_missing_timestamps(df,
                                      interval='20min',
@@ -121,7 +120,7 @@ class Testget_missing_aquisition_timestamps(unittest.TestCase):
     def test_fill_nan(self):
         df = self.get_testset()
         #remove 8 values at random
-        for n in range(8):
+        for _ in range(8):
             df = df.drop([df.index[random.randint(0, len(df)-1)]])
         df2 = add_missing_timestamps(df,
                                      interval='20min',
@@ -133,7 +132,7 @@ class Testget_missing_aquisition_timestamps(unittest.TestCase):
     def test_drop_additional(self):
         df = self.get_testset()
         #change the time of 8 values at random
-        for n in range(8):
+        for _ in range(8):
             df.current_time[random.randint(0, len(df)-1)]+=pd.to_timedelta(16, unit='min')
         df2 = add_missing_timestamps(df,
                                      interval='20min',
@@ -152,21 +151,25 @@ class Testget_missing_aquisition_timestamps(unittest.TestCase):
         df = df_o[:]
         #remove 8 values at random
         dropped = []
-        for n in range(8):
+        for _ in range(8):
             drop = df.index[random.randint(0, len(df)-1)]
             dropped.append(df.loc[drop])
             df = df.drop([drop])
-        
+
         df2 = add_missing_timestamps(df,
                                      interval='20min',
                                      sample_start='07:20',
                                      sample_end='23:40')
         df2 = fill_nan_values(df2)
         #get the values it recovered:
-        recovered=[]
-        for n, drop in enumerate(dropped):
-            recovered.append(df2[(df2.gym_name == drop.gym_name)&
-                                 (df2.current_time == drop.current_time)])
+        recovered = [
+            df2[
+                (df2.gym_name == drop.gym_name)
+                & (df2.current_time == drop.current_time)
+            ]
+            for drop in dropped
+        ]
+
         '''
         #in case of visual inspection
         plt.figure()

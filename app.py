@@ -52,7 +52,7 @@ def get_current_time():
     current_min = int(dt.split(':')[1])
     distances = [abs(current_min - _min) for _min in minutes]
     closest_min = minutes[distances.index(min(distances))]
-    current_time = dt.replace(':'+str(current_min), ':'+str(closest_min))
+    current_time = dt.replace(f':{current_min}', f':{str(closest_min)}')
     current_time = datetime.datetime.strptime(current_time, "%Y/%m/%d %H:%M")
 
     return current_time
@@ -118,9 +118,8 @@ if __name__ == "__main__":
     #    st_prediction(boulderdf, selected_gym)
     st_avg_data(boulderdf, selected_gym)
 
-    st.markdown(f"""
-    Does your gym show this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎\n
-    Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).\n
-    Follow us! [![@anebzt](https://img.shields.io/twitter/follow/anebzt?style=social)](https://www.twitter.com/anebzt)
-    [![@_AnglinaB](https://img.shields.io/twitter/follow/_AnglinaB?style=social)](https://www.twitter.com/_AnglinaB)""")
+    st.markdown(
+        """\x1f    Does your gym show this occupancy data? Make a PR yourself or let us know and we'll add your gym 😎\\n\x1f    Created by [anebz](https://github.com/anebz) and [AnglinaBhambra](https://github.com/AnglinaBhambra).\\n\x1f    Follow us! [![@anebzt](https://img.shields.io/twitter/follow/anebzt?style=social)](https://www.twitter.com/anebzt)\x1f    [![@_AnglinaB](https://img.shields.io/twitter/follow/_AnglinaB?style=social)](https://www.twitter.com/_AnglinaB)"""
+    )
+
     streamlit_analytics.stop_tracking(firestore_key_file="firestore-key.json", firestore_collection_name="counts")

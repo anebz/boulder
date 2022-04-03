@@ -118,12 +118,15 @@ def given_day(boulderdf: pd.DataFrame, date: str, gym: str) -> pd.DataFrame:
 def plot_data(df: pd.DataFrame):
     # to plot several graphs in the y axis, melt the df
     df = df.melt('time', var_name='name', value_name='occupancy')
-    chart = alt.Chart(df).mark_line(interpolate='basis').encode(
-        x=alt.X('time:N', axis=alt.Axis(grid=True)),
-        y=alt.Y('occupancy:Q', scale=alt.Scale(domain=[0, 100])),
-        color=alt.Color("name:N")
+    return (
+        alt.Chart(df)
+        .mark_line(interpolate='basis')
+        .encode(
+            x=alt.X('time:N', axis=alt.Axis(grid=True)),
+            y=alt.Y('occupancy:Q', scale=alt.Scale(domain=[0, 100])),
+            color=alt.Color("name:N"),
+        )
     )
-    return chart
 
 
 def preprocess_current_data(boulderdf: pd.DataFrame, selected_gym: str, current_time: datetime.date):
@@ -149,6 +152,4 @@ def preprocess_current_data(boulderdf: pd.DataFrame, selected_gym: str, current_
     today_data[onehotlist.index('weather_temp')] = latest_gym_entry['weather_temp']
     today_data[onehotlist.index(latest_gym_entry['weather_status'])] = 1
 
-    # convert to numpy array
-    X_today = [np.asarray(today_data)]
-    return X_today
+    return [np.asarray(today_data)]
