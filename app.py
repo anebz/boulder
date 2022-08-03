@@ -8,7 +8,7 @@ import streamlit as st
 import streamlit_analytics
 from src.visualize_data import avg_data_day, given_day, preprocess_current_data, plot_data
 
-bucketname = 'bboulderdataset'
+bucketname = 'boulderbucket'
 dfname = 'boulderdata.csv'
 modelname = 'model.dat'
 gymdataname = 'gymdata.json'
