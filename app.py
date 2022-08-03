@@ -13,6 +13,7 @@ dfname = 'boulderdata.csv'
 modelname = 'model.dat'
 gymdataname = 'gymdata.json'
 s3 = boto3.client('s3')
+ane = 1
 
 def st_given_day(boulderdf, gymdatadf):
     # ask user for gym and date input
