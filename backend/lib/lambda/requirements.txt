@@ -1,0 +1,5 @@
+boto3
+bs4
+pandas
+pyowm
+pytz

@@ -1,4 +1,11 @@
 {
+    "Aalen Kletterhalle": {
+        "url": "https://kletterhalle-aalen.de",
+        "location": "Aalen",
+        "function": "get_occupancy_boulderado",
+        "lat": 48.822316,
+        "long": 9.9831907
+    },
     "Bad Tölz DAV": {
         "url": "https://www.kletterzentrum-badtoelz.de",
         "location": "Bad Tolz",
@@ -54,6 +61,13 @@
         "function": "get_occupancy_boulderwelt",
         "lat": 51.4945889,
         "long": 7.3755849
+    },
+    "Duisburg Einstein": {
+        "url": "https://duisburg.einstein-boulder.com",
+        "location": "Duisburg",
+        "function": "get_occupancy_boulderado",
+        "lat": 51.4319533,
+        "long": 6.7408313
     },
     "Erlangen DAV": {
         "url": "https://www.kletter-und-vereinszentrum.de",
@@ -125,6 +139,20 @@
         "lat": 54.3092377,
         "long": 10.0290279
     },
+    "Kirchheim Stuntwerk": {
+        "url": "https://stuntwerk-kirchheim.de/",
+        "location": "Kirchheim",
+        "function": "get_occupancy_boulderado",
+        "lat": 48.6509415,
+        "long": 9.435778
+    },
+    "Koeln Stuntwerk": {
+        "url": "https://stuntwerk-koeln.de/",
+        "location": "Koeln",
+        "function": "get_occupancy_boulderado",
+        "lat": 50.9659761,
+        "long": 7.0086748
+    },
     "Koeln Kletterfabrik": {
         "url": "https://www.kletterfabrik.koeln/",
         "location": "Koeln",
@@ -138,6 +166,13 @@
         "function": "get_occupancy_boulderado",
         "lat": 47.6751636,
         "long": 9.1415313
+    },
+    "Krefeld Stuntwerk": {
+        "url": "https://stuntwerk-krefeld.de/",
+        "location": "Krefeld",
+        "function": "get_occupancy_boulderado",
+        "lat": 51.3448038,
+        "long": 6.5417552
     },
     "Landshut DAV": {
         "url": "https://www.kletterzentrum-landshut.de/",
@@ -202,19 +237,26 @@
         "lat": 48.1240871,
         "long": 11.6045269
     },
-    "Nurnberg Der Steinbock": {
-        "url": "https://www.dersteinbock-nuernberg.de/",
+    "Nuernberg Der Steinbock": {
+        "url": "https://www.dersteinbock-nuernberg.de",
         "location": "Nürnberg",
         "function": "get_occupancy_boulderado",
         "lat": 49.45098,
         "long": 11.0282128
     },
-    "Nurnberg climbing factory": {
+    "Nuernberg climbing factory": {
         "url": "https://climbing-factory.de/startseite.html",
         "location": "Nürnberg",
         "function": "get_occupancy_webclimber",
         "lat": 49.45967,
         "long": 11.03484
+    },
+    "Nuernberg Boulderhalle": {
+        "url": "https://www.boulderhalle-e4.de",
+        "location": "Nürnberg",
+        "function": "get_occupancy_boulderado",
+        "lat": 49.4344535,
+        "long": 11.0949923
     },
     "Passau Der Steinbock": {
         "url": "https://www.dersteinbock-passau.de/",
@@ -222,6 +264,13 @@
         "function": "get_occupancy_boulderado",
         "lat": 48.5588132,
         "long": 13.4205045
+    },
+    "Recklinghausen Einstein": {
+        "url": "https://recklinghausen.einstein-boulder.com/",
+        "location": "Recklinghausen",
+        "function": "get_occupancy_boulderado",
+        "lat": 51.5817924,
+        "long": 7.205318
     },
     "Regensburg Boulderwelt": {
         "url": "https://www.boulderwelt-regensburg.de",
@@ -243,6 +292,13 @@
         "function": "get_occupancy_webclimber",
         "lat": 48.5048371,
         "long": 9.2014625
+    },
+    "Rosenheim Stuntwerk": {
+        "url": "https://stuntwerk-rosenheim.de/",
+        "location": "Rosenheim",
+        "function": "get_occupancy_boulderado",
+        "lat": 47.8496254,
+        "long": 12.0896361
     },
     "Straubing Boulderhalle": {
         "url": "https://www.boulderhalle-straubing.de/",
@@ -266,11 +322,25 @@
         "long": 9.1611959
     },
     "Tuebingen B12 DAV": {
-        "url": "https://b12-tuebingen.de/",
+        "url": "https://b12-tuebingen.de",
         "location": "Tuebingen",
         "function": "get_occupancy_webclimber",
         "lat": 48.5223036,
         "long": 9.0812478
+    },
+    "Ulm Einstein": {
+        "url": "https://ulm.einstein-boulder.com",
+        "location": "Ulm",
+        "function": "get_occupancy_boulderado",
+        "lat": 48.400751,
+        "long": 9.962773
+    },
+    "Wuerzburg Rock Inn": {
+        "url": "https://rockinn-wuerzburg.de",
+        "location": "Wuerzburg",
+        "function": "get_occupancy_boulderado",
+        "lat": 49.8012845,
+        "long": 9.9712107
     },
     "Zirndorf Der Steinbock": {
         "url": "https://www.dersteinbock-zirndorf.de/",
