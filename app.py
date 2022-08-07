@@ -14,14 +14,20 @@ modelname = 'model.dat'
 gymdataname = 'gymdata.json'
 s3 = boto3.client('s3')
 
+# Download files from S3
+s3.download_file(bucketname, dfname, dfname)
+s3.download_file(bucketname, gymdataname, gymdataname)
+if not os.path.isfile('firestore-key.json'):
+    s3.download_file(bucketname, 'firestore-key.json', 'firestore-key.json')
+
 def st_given_day(boulderdf, gymdatadf):
     # ask user for gym and date input
     st.markdown("## How full is my gym today?")
 
     selected_gym = st.radio('Select a gym', sorted(list(boulderdf['gym_name'].unique())))
     today = datetime.date.today()
-    # get first available date, the last row in the dataframe
-    first_date = datetime.datetime.strptime(boulderdf.iloc[-1]['time'], "%Y/%m/%d %H:%M")
+    # first available date is one month before the current date
+    first_date = today - datetime.timedelta(days=30)
     selected_date = st.date_input('Selected date', today, min_value=first_date, max_value=today)
 
     st.markdown(f"### Showing results for [{selected_gym}]({gymdatadf[selected_gym]['url']})\nOccupancy shown in percentage")
@@ -89,29 +95,24 @@ def st_avg_data(boulderdf, selected_gym):
 
 if __name__ == "__main__":
 
+    gymdatadf = pd.read_json(gymdataname)
+
     st.set_page_config(
         page_title="Bouldern",
         #layout="wide",
         page_icon="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/271/person-climbing_1f9d7.png")
     st.title('Boulder gym tracker 🧗🧗‍♂️🧗‍♀️')
-    st.markdown('**Update 06.08.2022: currently supporting 50 gyms!** 🚀')
+    st.markdown(f'**Update 06.08.2022: currently supporting {len(gymdatadf.columns)} gyms!** 🚀')
     st.write("Github repo: [![Star](https://img.shields.io/github/stars/anebz/boulder.svg?logo=github&style=social)](https://gitHub.com/anebz/boulder)")
     st.image('https://land8.com/wp-content/uploads/2017/07/Bouldering1.jpg', width=700)
-
-    s3.download_file(bucketname, gymdataname, gymdataname)
-    gymdatadf = pd.read_json(gymdataname)
 
     # plot map with gym coordinates
     st.map(pd.DataFrame([[gymdatadf[gym_name]['lat'], gymdatadf[gym_name]['long']] for gym_name in gymdatadf], columns=['lat', 'lon']))
 
     # set up analytics
-    if not os.path.isfile('firestore-key.json'):
-        s3.download_file(bucketname, 'firestore-key.json', 'firestore-key.json')
     streamlit_analytics.start_tracking(firestore_key_file="firestore-key.json", firestore_collection_name="counts")
 
-    s3.download_file(bucketname, dfname, dfname)
     boulderdf = pd.read_csv(dfname)
-
     selected_gym, selected_date = st_given_day(boulderdf, gymdatadf)
     # only show prediction for current day
     #if str(selected_date) == str(datetime.datetime.today().strftime('%Y-%m-%d')):
