@@ -12,7 +12,11 @@ bucketname = 'boulderbucket'
 dfname = 'boulderdata.csv'
 modelname = 'model.dat'
 gymdataname = 'gymdata.json'
-s3 = boto3.client('s3')
+s3 = boto3.client('s3'
+                  aws_access_key_id=st.secrets.aws_access_key_id,
+                  aws_secret_access_key=st.secrets.aws_secret_access_key,
+                  region_name=st.secrets.region
+                 )
 
 # Download files from S3
 s3.download_file(bucketname, dfname, dfname)
